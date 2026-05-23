@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CATETIC SHOWDOWN</title>
+    <style>
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; overflow: hidden; display: flex; justify-content: center; align-items: center; }
+        #gameCanvas { aspect-ratio: 9 / 16; height: 100vh; max-width: 100%; background: #0a0a0c; display: block; }
+    </style>
+</head>
+<body>
+
+    <canvas id="gameCanvas" width="1080" height="1920"></canvas>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        let currentScreen = "MENU";
+
+        // Pointing directly to your exact mobile upload filename
+        const menuBackground = new Image();
+        menuBackground.src = 'IMG_8991.png';
+
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            const rect = canvas.getBoundingClientRect();
+            // Maps touches directly to the 1080x1920 layout coordinates
+            const touchX = ((e.touches[0].clientX - rect.left) / rect.width) * 1080;
+            const touchY = ((e.touches[0].clientY - rect.top) / rect.height) * 1920;
+
+            if (currentScreen === "MENU") {
+                // 1. "CATETIC" Hidden Logo Hotbox (Top Header Area)
+                if (touchX > 60 && touchX < 1020 && touchY > 160 && touchY < 430) {
+                    console.log("💎 [DEV] Secret Catetic Signature Accessed.");
+                }
+                
+                // 2. "START スタート" Hotbox (Lower Glowing Button Region)
+                if (touchX > 240 && touchX < 840 && touchY > 1580 && touchY < 1880) {
+                    currentScreen = "COMBAT";
+                    console.log("🎮 Combat Initialized via Start Button.");
+                }
+            } else if (currentScreen === "COMBAT") {
+                // One-Button Fast-Paced Rhythmic "DELETE" Trigger Zone
+                if (touchY > 960) {
+                    console.log("💥 DELETE Combo Input Sent.");
+                }
+            }
+        });
+
+        function drawLoop() {
+            ctx.clearRect(0, 0, 1080, 1920);
+            
+            if (currentScreen === "MENU") {
+                if (menuBackground.complete) {
+                    ctx.drawImage(menuBackground, 0, 0, 1080, 1920);
+                } else {
+                    ctx.fillStyle = "#000";
+                    ctx.fillRect(0, 0, 1080, 1920);
+                    ctx.fillStyle = "#4ade80";
+                    ctx.font = "bold 40px monospace";
+                    ctx.fillText("[ INITIALIZING MATRIX... ]", 280, 960);
+                }
+            } else {
+                // Active 15-Second High Speed Fight Screen Base
+                ctx.fillStyle = "#050507";
+                ctx.fillRect(0, 0, 1080, 1920);
+                ctx.fillStyle = "#ef4444";
+                ctx.font = "bold 45px monospace";
+                ctx.fillText("=== COMBAT ARENA ACTIVE ===", 220, 250);
+            }
+            requestAnimationFrame(drawLoop);
+        }
+        drawLoop();
+    </script>
+</body>
+</html>
