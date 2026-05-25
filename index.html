@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CATETIC</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        body, html {
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+            overflow: hidden;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        #viewport {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        canvas {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: #000;
+        }
+        video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: none;
+            cursor: pointer;
+            z-index: 5;
+        }
+        .overlay-layer {
+            position: absolute;
+            display: none;
+            pointer-events: none;
+        }
+        #rules-overlay {
+            width: 80%;
+            max-width: 600px;
+            color: #00ff00;
+            font-size: 1.2rem;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            pointer-events: auto;
+            cursor: pointer;
+            z-index: 10;
+        }
+        .action-btn {
+            position: absolute;
+            bottom: 12%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 14px 28px;
+            background: #000;
+            color: #00ff00;
+            border: 2px solid #00ff00;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+            pointer-events: auto;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+            z-index: 10;
+        }
+        .action-btn:active {
+            background: #00ff00;
+            color: #000;
+        }
+        #lounge-v2-controls {
+            position: absolute;
+            bottom: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 280px;
+            pointer-events: auto;
+            z-index: 10;
+        }
+        #lounge-v2-controls .action-btn {
+            position: static;
+            transform: none;
+            width: 100%;
+        }
+        #keypad-container {
+            position: absolute;
+            pointer-events: auto;
+            display: none;
+            z-index: 10;
+        }
+        #led-display {
+            position: absolute;
+            color: #ff3333;
+            font-weight: bold;
+            font-family: monospace;
+            text-shadow: 0 0 4px #ff0000;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            overflow: hidden;
+        }
+        .keypad-btn {
+            position: absolute;
+            background: rgba(255, 0, 0, 0);
+            border: none;
+            cursor: pointer;
+            outline: none;
+        }
+        .keypad-btn:active {
+            background: rgba(255, 255, 255, 0.15);
+        }
+        #toast {
+            position: absolute;
+            top: 8%;
+            left: 50%;
+            transform: translateX(-50%) translateY(-20px);
+            background: rgba(0, 255, 0, 0.9);
+            color: #000;
+            padding: 12px 24px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            border-radius: 4px;
+            opacity: 0;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 100;
+            white-space: nowrap;
+        }
+        #toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+    </style>
+</head>
+<body>
+
+<div id="viewport">
+    <canvas id="gameCanvas"></canvas>
+    
+    <video id="casualVideo" loop muted playsinline src="1775353548457063.mp4"></video>
+
+    <div id="rules-overlay" class="overlay-layer"></div>
+    
+    <button id="toast-btn" class="action-btn overlay-layer">PROPOSE A TOAST 🥂</button>
+    
+    <div id="lounge-v2-controls" class="overlay-layer">
+        <button id="decrypt-btn" class="action-btn">[DECRYPT PRIVACY VAULT 🔒]</button>
+        <button id="reality-btn" class="action-btn">[RETURN TO REALITY]</button>
+    </div>
+
+    <div id="keypad-container">
+        <div id="led-display"></div>
+        <button class="keypad-btn" data-key="1" style="top:38.2%; left:17.3%; width:19.5%; height:9.8%;"></button>
+        <button class="keypad-btn" data-key="2" style="top:38.2%; left:40.2%; width:19.5%; height:9.8%;"></button>
+        <button class="keypad-btn" data-key="3" style="top:38.2%; left:63.2%; width:19.5%; height:9.8%;"></button>
+        <button class="keypad-btn" data-key="4" style="top:50.5%; left:17.3%; width:19.5%; height:9.8%;"></button>
+        <button class="keypad-btn" data-key="5" style="top:50.5%; left:40.2%; width:19.5%; height:9.8%;"></button>
+        <button class="keypad-btn" data-key="6" style="top:50.5%; left:63.2%; width:19.5%; height:9.8%;"></button>
+        <button class="keypad-btn" data-key="7" style="top:62.8%; left:17.3%; width:19.5%; height:9.8%;"></button>
+        <button class="keypad-btn" data-key="8" style="top:62.8%; left:40.2%; width:19.5%; height:9.8%;"></button>
+        <button class="keypad-btn" data-key="9" style="top:62.8%; left:63.2%; width:19.5%; height:9.8%;"></button>
+        <button class="keypad-btn" data-key="C" style="top:75.1%; left:17.3%; width:19.5%; height:9.8%;"></button>
+        <button class="keypad-btn" data-key="0" style="top:75.1%; left:40.2%; width:19.5%; height:9.8%;"></button>
+        <button class="keypad-btn" data-key="OK" style="top:75.1%; left:63.2%; width:19.5%; height:9.8%;"></button>
+        
+        <button id="abort-btn" class="action-btn" style="position:absolute; bottom:-18%; width:80%; left:10%; transform:none;">Abort Decryption</button>
+    </div>
+
+    <div id="toast">Address Copied to Clipboard!</div>
+</div>
+
+<script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const video = document.getElementById('casualVideo');
+
+    // Audio Engine Configuration
+    const bgMusic = new Audio('Intro_music.m4a');
+    bgMusic.loop = true;
+    let musicStarted = false;
+
+    function startMusic() {
+        if (!musicStarted) {
+            bgMusic.play().catch(e => console.log("Audio waiting for explicit user swipe or click."));
+            musicStarted = true;
+        }
+    }
+
+    // State Machine Architecture
+    const STATE = {
+        MAIN: 'MAIN',
+        RULES: 'RULES',
+        T1: 'T1',
+        T2: 'T2',
+        CASUAL: 'CASUAL',
+        VIP_L1: 'VIP_L1',
+        VIP_L2: 'VIP_L2',
+        KEYPAD: 'KEYPAD',
+        SMILE: 'SMILE'
+    };
+
+    let currentState = STATE.MAIN;
+    let keypadBuffer = "";
+    let typewriterInterval = null;
+
+    // Strict Git File Tree Asset Mapping
+    const ASSETS = {
+        MAIN: 'IMG_9044.png', 
+        RULES_BTN: 'IMG_8681.png',
+        T1: 'IMG_9048.png',
+        T2: 'IMG_9049.png',
+        VIP_L1: 'IMG_9053.png',
+        VIP_L2: 'IMG_9054.png',
+        KEYPAD: 'IMG_9058.png'
+    };
+
+    const CRYPTO = {
+        BTC: 'bc1q92lt3zqcsfmyjasjchgqxp4w2khmqwse9c5f59',
+        ETH: '0x8238da0AEB879164a7B53607E527350f0D1F1990'
+    };
+
+    const images = {};
+    let loadedImagesCount = 0;
+    const totalImages = Object.keys(ASSETS).length;
+    let renderMetrics = { x: 0, y: 0, width: 0, height: 0 };
+
+    function preloadAssets() {
+        for (let key in ASSETS) {
+            images[key] = new Image();
+            images[key].src = ASSETS[key];
+            images[key].onload = () => {
+                loadedImagesCount++;
+                if (loadedImagesCount === totalImages) {
+                    initializeEngine();
+                }
+            };
+            images[key].onerror = () => {
+                console.error(`Error loading asset: ${ASSETS[key]}`);
+            };
+        }
+    }
+
+    function initializeEngine() {
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        setupInteractionHandlers();
+        render();
+    }
+
+    function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        calculateRenderMetrics();
+        repositionHTMLOverlays();
+        render();
+    }
+
+    function calculateRenderMetrics() {
+        // Core metrics anchor to baseline image dimensions
+        const img = images['MAIN'];
+        if (!img) return;
+        
+        const imageRatio = img.width / img.height;
+        const canvasRatio = canvas.width / canvas.height;
+
+        if (canvasRatio < imageRatio) {
+            renderMetrics.width = canvas.width;
+            renderMetrics.height = canvas.width / imageRatio;
+        } else {
+            renderMetrics.height = canvas.height;
+            renderMetrics.width = canvas.height * imageRatio;
+        }
+        renderMetrics.x = (canvas.width - renderMetrics.width) / 2;
+        renderMetrics.y = (canvas.height - renderMetrics.height) / 2;
+    }
+
+    function repositionHTMLOverlays() {
+        const kp = document.getElementById('keypad-container');
+        kp.style.width = `${renderMetrics.width}px`;
+        kp.style.height = `${renderMetrics.height}px`;
+        kp.style.left = `${renderMetrics.x}px`;
+        kp.style.top = `${renderMetrics.y}px`;
+
+        const led = document.getElementById('led-display');
+        led.style.top = '17.5%';
+        led.style.left = '16.5%';
+        led.style.width = '67%';
+        led.style.height = '11.5%';
+        led.style.fontSize = `${renderMetrics.height * 0.055}px`;
+        led.style.paddingRight = `${renderMetrics.width * 0.04}px`;
+    }
+
+    function render() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Terminal text rendering rooms
+        if (currentState === STATE.RULES || currentState === STATE.SMILE) {
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            if (currentState === STATE.SMILE) {
+                ctx.fillStyle = '#00ff00';
+                ctx.font = `bold ${canvas.width * 0.15}px monospace`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('😊', canvas.width / 2, canvas.height / 2);
+            }
+            return;
+        }
+
+        if (currentState === STATE.CASUAL) return;
+
+        // Render Active Image Frame Based on Core States
+        let activeAssetKey = currentState;
+        const activeImg = images[activeAssetKey];
+        if (activeImg) {
+            ctx.drawImage(activeImg, renderMetrics.x, renderMetrics.y, renderMetrics.width, renderMetrics.height);
+        }
+
+        // Render Rules overlay button explicitly on the Main landing view
+        if (currentState === STATE.MAIN) {
+            const rulesBtn = images['RULES_BTN'];
+            if (rulesBtn) {
+                const rw = renderMetrics.width * 0.25;
+                const rh = (rulesBtn.height / rulesBtn.width) * rw;
+                const rx = renderMetrics.x + (renderMetrics.width * 0.05);
+                const ry = renderMetrics.y + (renderMetrics.height * 0.05);
+                ctx.drawImage(rulesBtn, rx, ry, rw, rh);
+            }
+        }
+    }
+
+    function setupInteractionHandlers() {
+        window.addEventListener('click', (e) => {
+            startMusic();
+            handleGlobalClick(e);
+        });
+
+        video.addEventListener('click', (e) => {
+            e.stopPropagation();
+            exitCasualPath();
+        });
+
+        document.querySelectorAll('.keypad-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                processKeyInput(btn.getAttribute('data-key'));
+            });
+        });
+
+        document.getElementById('toast-btn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            transitionToState(STATE.VIP_L2);
+        });
+
+        document.getElementById('reality-btn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            transitionToState(STATE.MAIN);
+        });
+
+        document.getElementById('decrypt-btn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            transitionToState(STATE.KEYPAD);
+        });
+
+        document.getElementById('abort-btn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            transitionToState(STATE.MAIN);
+        });
+
+        document.getElementById('rules-overlay').addEventListener('click', (e) => {
+            e.stopPropagation();
+            transitionToState(STATE.MAIN);
+        });
+    }
+
+    function handleGlobalClick(e) {
+        const rect = canvas.getBoundingClientRect();
+        const clickX = e.clientX - rect.left;
+        const clickY = e.clientY - rect.top;
+
+        // Normalize scaling calculations across varied dynamic display limits
+        const normalizedX = (clickX - renderMetrics.x) / renderMetrics.width;
+        const normalizedY = (clickY - renderMetrics.y) / renderMetrics.height;
+
+        if (currentState === STATE.MAIN) {
+            // Rules Asset Area Map Intersection
+            if (normalizedX >= 0.05 && normalizedX <= 0.30 && normalizedY >= 0.05 && normalizedY <= 0.18) {
+                transitionToState(STATE.RULES);
+                return;
+            }
+            // Central Title Logo Matrix Intersection -> Cycle to Tap 1
+            if (normalizedX >= 0.25 && normalizedX <= 0.75 && normalizedY >= 0.35 && normalizedY <= 0.65) {
+                transitionToState(STATE.T1);
+                return;
+            }
+        }
+        else if (currentState === STATE.T1) {
+            // Screen Tap 1: Anywhere in the center logic cycles straight to Tap 2
+            if (normalizedX >= 0.1 && normalizedX <= 0.9 && normalizedY >= 0.2 && normalizedY <= 0.8) {
+                transitionToState(STATE.T2);
+            }
+        }
+        else if (currentState === STATE.T2) {
+            // Screen Tap 2 (IMG_9049.png): Explicitly analyze QR Code bounds
+            // Left Side: BTC QR Intersection Matrix
+            if (normalizedX >= 0.10 && normalizedX <= 0.45 && normalizedY >= 0.50 && normalizedY <= 0.75) {
+                executeSecureCopy('BTC');
+                return;
+            }
+            // Right Side: ETH QR Intersection Matrix
+            if (normalizedX >= 0.55 && normalizedX <= 0.90 && normalizedY >= 0.50 && normalizedY <= 0.75) {
+                executeSecureCopy('ETH');
+                return;
+            }
+            
+            // Casual Fallback Click Trigger (Clicked background instead of QR targets)
+            if (normalizedX >= 0 && normalizedX <= 1 && normalizedY >= 0 && normalizedY <= 1) {
+                transitionToState(STATE.CASUAL);
+            }
+        }
+        else if (currentState === STATE.RULES || currentState === STATE.SMILE) {
+            transitionToState(STATE.MAIN);
+        }
+    }
+
+    function executeSecureCopy(type) {
+        const address = CRYPTO[type];
+        navigator.clipboard.writeText(address).then(() => {
+            showToast(`Copied ${type} Address Securely`);
+            transitionToState(STATE.VIP_L1);
+        }).catch(() => {
+            showToast(`Copied ${type} (Fallback)`);
+            transitionToState(STATE.VIP_L1);
+        });
+    }
+
+    function showToast(message) {
+        const toast = document.getElementById('toast');
+        toast.innerText = message;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+
+    function processKeyInput(key) {
+        const led = document.getElementById('led-display');
+        
+        if (key === 'C') {
+            keypadBuffer = "";
+        } else if (key === 'OK') {
+            if (keypadBuffer === "7777777") {
+                transitionToState(STATE.SMILE);
+            } else {
+                keypadBuffer = "";
+                led.style.color = "#ff0000";
+                led.innerText = "ERROR";
+                setTimeout(() => {
+                    led.style.color = "#ff3333";
+                    led.innerText = "";
+                }, 600);
+                return;
+            }
+        } else {
+            if (keypadBuffer.length < 7) {
+                keypadBuffer += key;
+            }
+        }
+        led.innerText = keypadBuffer;
+    }
+
+    function exitCasualPath() {
+        video.pause();
+        video.style.display = 'none';
+        transitionToState(STATE.MAIN);
+    }
+
+    function transitionToState(targetState) {
+        clearInterval(typewriterInterval);
+        
+        // Purge visual elements from previous processing frames
+        document.getElementById('rules-overlay').style.display = 'none';
+        document.getElementById('toast-btn').style.display = 'none';
+        document.getElementById('lounge-v2-controls').style.display = 'none';
+        document.getElementById('keypad-container').style.display = 'none';
+        
+        currentState = targetState;
+
+        if (currentState === STATE.CASUAL) {
+            video.style.display = 'block';
+            video.currentTime = 0;
+            video.play().catch(err => {
+                window.addEventListener('click', function forcePlay() {
+                    video.play();
+                    window.removeEventListener('click', forcePlay);
+                });
+            });
+        } 
+        else if (currentState === STATE.RULES) {
+            const container = document.getElementById('rules-overlay');
+            container.style.display = 'block';
+            runRulesTypewriter();
+        } 
+        else if (currentState === STATE.VIP_L1) {
+            document.getElementById('toast-btn').style.display = 'block';
+        } 
+        else if (currentState === STATE.VIP_L2) {
+            document.getElementById('lounge-v2-controls').style.display = 'flex';
+        } 
+        else if (currentState === STATE.KEYPAD) {
+            keypadBuffer = "";
+            document.getElementById('led-display').innerText = "";
+            document.getElementById('keypad-container').style.display = 'block';
+        }
+
+        render();
+    }
+
+    function runRulesTypewriter() {
+        const container = document.getElementById('rules-overlay');
+        const rulesText = "1. TAP LOGO TO CYCLE INTERFACES\n2. AUTHENTICATE VIA CRYPTO PATHS\n3. BYPASS SECURITY USING THE CHOSEN PROTOCOL\n\nEXIT REALITY ANYWHERE ";
+        container.innerHTML = "";
+        
+        let index = 0;
+        typewriterInterval = setInterval(() => {
+            if (index < rulesText.length) {
+                if (rulesText.charAt(index) === '\n') {
+                    container.innerHTML += '<br>';
+                } else {
+                    container.innerHTML += rulesText.charAt(index);
+                }
+                index++;
+            } else {
+                clearInterval(typewriterInterval);
+                const smileSpan = document.createElement('span');
+                smileSpan.style.color = '#00ff00';
+                smileSpan.innerText = '😊';
+                container.appendChild(smileSpan);
+            }
+        }, 30);
+    }
+
+    preloadAssets();
+</script>
+</body>
+</html>
