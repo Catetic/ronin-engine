@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CATETIC // SHOWDOWN</title>
+    <style>
+        :root { --neon: #00ff66; --red-led: #ff2a2a; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
+        
+        /* CRITICAL FIX: Lock viewport dimensions and hide global scrolling */
+        body, html { width: 100%; height: 100%; background: #000; font-family: monospace; overflow: hidden; color: #fff; }
+        
+        /* MASTER LAYER ARCHITECTURE: Forces elements to sit natively on top of each other, hidden by default */
+        .screen-layer { 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            width: 100vw; 
+            height: 100vh; 
+            display: none; 
+            background-size: cover; 
+            background-position: center; 
+            background-repeat: no-repeat; 
+        }
+        
+        /* Only the active class can render a screen block */
+        .screen-layer.active { 
+            display: block; 
+        }
+        
+        /* Invisible Precise Hit Boxes (No more text overlaps!) */
+        .main-logo-hit { position: absolute; top: 4%; left: 10%; width: 80%; height: 16%; cursor: pointer; }
+        .main-rules-hit { position: absolute; bottom: 14%; left: 4%; width: 26%; height: 8%; cursor: pointer; }
+        .main-start-hit { position: absolute; bottom: 11%; left: 32%; width: 36%; height: 13%; cursor: pointer; }
+
+        /* QR Frame Table Hitboxes */
+        .qr-table-wrapper { position: absolute; top: 48%; left: 5%; width: 90%; height: 26%; display: flex; gap: 4%; }
+        .qr-action-zone { width: 48%; height: 100%; cursor: pointer; }
+
+        /* Padlock Configuration Layout */
+        .padlock-box { position: relative; width: 100%; height: 100%; max-width: 440px; margin: 0 auto; background-size: cover; background-position: center; background-image: url('IMG_9058.png'); }
+        .pad-led-display { position: absolute; top: 12.3%; left: 41%; width: 36%; height: 5%; display: flex; align-items: center; justify-content: center; font-size: 24px; color: var(--red-led); font-weight: bold; letter-spacing: 4px; font-family: 'Courier New', monospace; text-shadow: 0 0 8px var(--red-led); pointer-events: none; }
+        .pad-touch-grid { position: absolute; top: 23%; left: 30%; width: 56%; height: 48%; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(4, 1fr); gap: 10px; }
+        .pad-touch-key { width: 100%; height: 100%; cursor: pointer; }
+        .padlock-abort-zone { position: absolute; bottom: 5%; left: 10%; width: 80%; height: 8%; cursor: pointer; }
+
+        /* Terminal Overlays */
+        #rulesOverlayPanel { position: absolute; top: 22%; left: 10%; width: 80%; font-size: 18px; line-height: 1.7; color: var(--neon); white-space: pre-line; text-shadow: 0 0 4px rgba(0,255,102,0.4); }
+        .terminal-smile { color: var(--neon); text-shadow: 0 0 8px var(--neon); font-size: 20px; font-weight: bold; }
+        .success-smile { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 120px; text-shadow: 0 0 40px var(--neon); text-align: center; cursor: pointer; }
+
+        /* Top Notification Toast */
+        #systemToast { position: fixed; top: 12%; left: 50%; transform: translateX(-50%); background: #000; border: 1px solid var(--neon); border-left: 5px solid var(--neon); padding: 14px 28px; font-size: 13px; letter-spacing: 2px; color: var(--neon); display: none; z-index: 99999; text-transform: uppercase; }
+        #systemToast.show { display: block; }
+    </style>
+</head>
+<body>
+
+    <div id="systemToast">» NODE ONLINE</div>
+
+    <div id="layer-main" class="screen-layer active" style="background-image: url('IMG_8681.png');">
+        <div class="main-logo-hit" onclick="executeBackdoor()"></div>
+        <div class="main-rules-hit" onclick="openRulesTerminal()"></div>
+        <div class="main-start-hit" onclick="triggerArcadeArena()"></div>
+    </div>
+
+    <div id="layer-shades" class="screen-layer" style="background-image: url('IMG_9048.png');" onclick="executeBackdoor()"></div>
+
+    <div id="layer-qr-gate" class="screen-layer" style="background-image: url('IMG_9049.png');" onclick="if(event.target===this) dropToCasualVideo();">
+        <div class="qr-table-wrapper">
+            <div class="qr-action-zone" onclick="copyCryptoTarget('btc')"></div>
+            <div class="qr-action-zone" onclick="copyCryptoTarget('eth')"></div>
+        </div>
+    </div>
+
+    <div id="layer-video" class="screen-layer" onclick="forceReboot()">
+        <video id="rainVideoAsset" loop muted playsinline style="position:absolute; width:100%; height:100%; object-fit:cover; z-index:-1;">
+            <source src="1775353548457063.mp4" type="video/mp4">
+        </video>
+    </div>
+
+    <div id="layer-lounge-1" class="screen-layer" style="background-image: url('IMG_9053.png');" onclick="raiseLoungeToast()"></div>
+
+    <div id="layer-lounge-2" class="screen-layer" style="background-image: url('IMG_9054.png');" onclick="navigateToLayer('layer-padlock')"></div>
+
+    <div id="layer-padlock" class="screen-layer" style="background: #000;">
+        <div class="padlock-box">
+            <div class="pad-led-display" id="ledScreenOutput"></div>
+            <div class="pad-touch-grid">
+                <div class="pad-touch-key" onclick="pressPadlockNum('1')"></div>
+                <div class="pad-touch-key" onclick="pressPadlockNum('2')"></div>
+                <div class="pad-touch-key" onclick="pressPadlockNum('3')"></div>
+                <div class="pad-touch-key" onclick="pressPadlockNum('4')"></div>
+                <div class="pad-touch-key" onclick="pressPadlockNum('5')"></div>
+                <div class="pad-touch-key" onclick="pressPadlockNum('6')"></div>
+                <div class="pad-touch-key" onclick="pressPadlockNum('7')"></div>
+                <div class="pad-touch-key" onclick="pressPadlockNum('8')"></div>
+                <div class="pad-touch-key" onclick="pressPadlockNum('9')"></div>
+                <div class="pad-touch-key" onclick="clearPadlockDisplay()"></div>
+                <div class="pad-touch-key" onclick="pressPadlockNum('0')"></div>
+                <div class="pad-touch-key" onclick="checkVaultAccess()"></div>
+            </div>
+            <div class="padlock-abort-zone" onclick="forceReboot()"></div>
+        </div>
+    </div>
+
+    <div id="layer-vault-success" class="screen-layer" style="background: #000;">
+        <div class="success-smile" onclick="forceReboot()">😊</div>
+    </div>
+
+    <div id="layer-terminal-rules" class="screen-layer" style="background: rgba(0,0,0,0.99); z-index: 99999;">
+        <div id="rulesOverlayPanel"></div>
+    </div>
+
+    <script>
+        const CORE_DATA = {
+            btc: "bc1q92lt3zqcsfmyjasjchgqxp4w2khmqwse9c5f59",
+            eth: "0x8238da0AEB879164a7B53607E527350f0D1F1990",
+            vaultKey: "7777777"
+        };
+
+        let clickState = 0;
+        let passcodeString = "";
+
+        function executeBackdoor() {
+            clickState++;
+            if (clickState === 1) navigateToLayer("layer-shades");
+            else if (clickState === 2) navigateToLayer("layer-qr-gate");
+        }
+
+        function dropToCasualVideo() {
+            clickState = 0;
+            navigateToLayer("layer-video");
+            const player = document.getElementById("rainVideoAsset");
+            if (player) { player.currentTime = 0; player.play(); }
+        }
+
+        function copyCryptoTarget(coin) {
+            clickState = 0;
+            navigator.clipboard.writeText(CORE_DATA[coin]).then(() => {
+                triggerToastBanner(`» ${coin.toUpperCase()} ADDRESS COPIED TO MEMORY`);
+            });
+            navigateToLayer("layer-lounge-1");
+        }
+
+        function raiseLoungeToast() {
+            navigateToLayer("layer-lounge-2");
+        }
+
+        function pressPadlockNum(val) {
+            if (passcodeString.length < 7) {
+                passcodeString += val;
+                updateLedDisplay();
+            }
+            if (passcodeString.length === 7) {
+                checkVaultAccess();
+            }
+        }
+
+        function clearPadlockDisplay() {
+            passcodeString = "";
+            updateLedDisplay();
+        }
+
+        function updateLedDisplay() {
+            const screen = document.getElementById("ledScreenOutput");
+            if (screen) screen.textContent = passcodeString;
+        }
+
+        function checkVaultAccess() {
+            if (passcodeString === CORE_DATA.vaultKey) {
+                navigateToLayer("layer-vault-success");
+            } else {
+                triggerToastBanner("» SECURE CRYPTO CORRUPT: DENIED");
+                setTimeout(clearPadlockDisplay, 600);
+            }
+        }
+
+        function triggerArcadeArena() {
+            triggerToastBanner("» MATCH INITIALIZING...");
+        }
+
+        function openRulesTerminal() {
+            navigateToLayer("layer-terminal-rules");
+            const output = document.getElementById("rulesOverlayPanel");
+            const stringLines = "» RULE 01: Break the simulation.\n» RULE 02: Tap frenzy speeds transaction nodes.\n» RULE 03: Grand donators bypass standard loops.\n» STATUS: Complete integration online.";
+            let index = 0;
+            output.innerHTML = "";
+
+            function typeWriter() {
+                if (index < stringLines.length) {
+                    output.innerHTML += stringLines.charAt(index);
+                    index++;
+                    setTimeout(typeWriter, 35);
+                } else {
+                    const smileSpan = document.createElement("span");
+                    smileSpan.className = "terminal-smile";
+                    smileSpan.innerText = " 😊";
+                    output.appendChild(smileSpan);
+                    
+                    setTimeout(() => {
+                        document.getElementById("layer-terminal-rules").addEventListener("click", forceReboot, { once: true });
+                    }, 150);
+                }
+            }
+            typeWriter();
+        }
+
+        function navigateToLayer(id) {
+            document.querySelectorAll(".screen-layer").forEach(layer => layer.classList.remove("active"));
+            const target = document.getElementById(id);
+            if (target) target.classList.add("active");
+        }
+
+        function forceReboot() {
+            clickState = 0;
+            passcodeString = "";
+            updateLedDisplay();
+            const player = document.getElementById("rainVideoAsset");
+            if (player) player.pause();
+            navigateToLayer("layer-main");
+        }
+
+        function triggerToastBanner(text) {
+            const toast = document.getElementById("systemToast");
+            if (toast) {
+                toast.textContent = text;
+                toast.classList.add("show");
+                setTimeout(() => toast.classList.remove("show"), 2500);
+            }
+        }
+    </script>
+</body>
+</html>
