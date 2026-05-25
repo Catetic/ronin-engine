@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CATETIC: SYNDICATE CORE</title>
+    <style>
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; overflow: hidden; display: flex; justify-content: center; align-items: center; }
+        #gameCanvas { width: 100vw; height: 100vh; object-fit: contain; background: #0a0a0c; display: block; cursor: crosshair; }
+    </style>
+</head>
+<body>
+
+    <canvas id="gameCanvas" width="1080" height="1920"></canvas>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        let gameState = "MENU";
+        let vaultInput = "";
+        const MASTER_PASS = "7777777";
+        
+        // Asset Registry
+        const assets = {
+            menu: new Image(), logo: new Image(), qrCat: new Image(), 
+            lounge1: new Image(), lounge2: new Image(), padlock: new Image()
+        };
+        assets.menu.src = 'IMG_9002.png'; assets.logo.src = 'IMG_8681.png';
+        assets.qrCat.src = 'IMG_9049.png'; assets.lounge1.src = 'IMG_9053.png';
+        assets.lounge2.src = 'IMG_9054.png'; assets.padlock.src = 'IMG_9058.png';
+
+        // State Machine Trigger
+        canvas.addEventListener('touchstart', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = ((e.touches[0].clientX - rect.left) / rect.width) * 1080;
+            const y = ((e.touches[0].clientY - rect.top) / rect.height) * 1920;
+
+            // GLOBAL RULES EXIT
+            if (gameState === "RULES_SCREEN" && visibleLetters >= fullRulesText.length) { gameState = "MENU"; return; }
+            
+            // VAULT GATE LOGIC
+            if (gameState === "VAULT_GATE") {
+                // Simplified hitboxes for 0-9 (Approximated for layout)
+                if (x > 200 && x < 880 && y > 1000 && y < 1400) {
+                    vaultInput += "7"; // Example binding
+                    if (vaultInput === MASTER_PASS) gameState = "SUCCESS_ROOM";
+                    if (vaultInput.length > 7) vaultInput = "";
+                }
+                return;
+            }
+
+            // MENU -> STAGE NAVIGATION
+            if (gameState === "MENU") {
+                if (x > 40 && x < 1040 && y > 80 && y < 450) gameState = "CAT_LOGO_1";
+            } else if (gameState === "CAT_LOGO_1") {
+                gameState = "CAT_LOGO_2";
+            } else if (gameState === "CAT_LOGO_2") {
+                // QR HITBOXES
+                if (x > 300 && x < 780 && y > 1000 && y < 1400) {
+                    navigator.clipboard.writeText("0x8238da0AEB879164a7B53607E527350f0D1F1990");
+                    gameState = "VIP_L1";
+                } else {
+                    gameState = "CASUAL_RAIN";
+                }
+            } else if (gameState === "VIP_L1") {
+                gameState = "VIP_L2";
+            } else if (gameState === "VIP_L2") {
+                if (y > 1500) gameState = "VAULT_GATE";
+            }
+        });
+
+        function draw() {
+            ctx.clearRect(0, 0, 1080, 1920);
+            
+            if (gameState === "MENU") ctx.drawImage(assets.menu, 0, 0, 1080, 1920);
+            else if (gameState === "CAT_LOGO_1") ctx.drawImage(assets.logo, 0, 0, 1080, 1920);
+            else if (gameState === "CAT_LOGO_2") ctx.drawImage(assets.qrCat, 0, 0, 1080, 1920);
+            else if (gameState === "VIP_L1") ctx.drawImage(assets.lounge1, 0, 0, 1080, 1920);
+            else if (gameState === "VIP_L2") ctx.drawImage(assets.lounge2, 0, 0, 1080, 1920);
+            else if (gameState === "VAULT_GATE") ctx.drawImage(assets.padlock, 0, 0, 1080, 1920);
+            else if (gameState === "SUCCESS_ROOM") {
+                ctx.fillStyle = "#000"; ctx.fillRect(0,0,1080,1920);
+                ctx.fillStyle = "#22c55e"; ctx.font = "100px monospace";
+                ctx.fillText("😊", 490, 960);
+            }
+
+            requestAnimationFrame(draw);
+        }
+        draw();
+    </script>
+</body>
+</html>
