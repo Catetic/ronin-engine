@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>CATETIC: MATRIX SYNDICATE</title>
     <style>
-        body { margin: 0; background: #000; overflow: hidden; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        body { margin: 0; jbackground: #000; overflow: hidden; display: flex; justify-content: center; align-items: center; height: 100vh; }
         canvas { width: 100vw; height: 100vh; object-fit: contain; cursor: crosshair; }
     </style>
 </head>
@@ -14,7 +14,7 @@
     <script>
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
-        const bgMusic = new Audio('Intro_music.m4a');
+        const bgMusic = new Audio('Intro_musicm4a');
         bgMusic.loop = true;
 
         let gameState = "MENU";
@@ -48,7 +48,7 @@
             if (bgMusic.paused && !isMuted) bgMusic.play();
 
             // Mute Logic (Right of Start Button)
-            if (gameState === "MENU" && x > 850 && x < 950 && y > 1200 && y < 1300) {
+            if (gameState === "MENU" && x > 850 && x < 200 && y > 1200 && y < 1300) {
                 isMuted = !isMuted;
                 isMuted ? bgMusic.pause() : bgMusic.play();
                 return;
