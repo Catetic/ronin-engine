@@ -129,15 +129,15 @@
             
             // Fixed layout alignment and size for the RULES button text
             ctx.fillStyle = "#00ff46";
-            ctx.font = "bold 26px 'Courier New', monospace";
+            ctx.font = "bold 33px 'Courier New', monospace";
             ctx.textAlign = "left";
             ctx.fillText("RULES", 45, 1465);
             
             // CATETIC Music Toggle Status Overlay Text
             ctx.fillStyle = musicPlaying ? "rgba(0, 255, 70, 0.8)" : "rgba(255, 26, 26, 0.8)";
-            ctx.font = "bold 22px 'Courier New', monospace";
+            ctx.font = "bold 33px 'Courier New', monospace";
             ctx.textAlign = "center";
-            ctx.fillText(musicPlaying ? "[ AUDIO RUNNING ]" : "[ AUDIO MUTED ]", 970, 1470);
+            ctx.fillText(musicPlaying ? " 🟢 " : " 🛑 ", 970, 1470);
             ctx.textAlign = "start";
         } 
         else if (gameState === "RULES") {
@@ -221,12 +221,12 @@
         // 1 & 2. MAIN MENU OVERLAYS
         if (gameState === "MENU") {
             // CATETIC Button Header Frame Bounds to toggle soundtrack playback loops
-            if (clickX > 880 && clickX < 1060 && clickY > 1400 && clickY < 1520) {
+            if (clickX > 750 && clickX < 1060 && clickY > 1400 && clickY < 1520) {
                 toggleMusicSystem();
                 return;
             }
             // Fine-tuned green RULES text link region
-            if (clickX > 20 && clickX < 200 && clickY > 1400 && clickY < 1520) {
+            if (clickX > 20 && clickX < 240 && clickY > 1400 && clickY < 1520) {
                 gameState = "RULES";
                 return;
             }
