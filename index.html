@@ -162,9 +162,10 @@
             ctx.stroke();
             ctx.fillRect(440, 1250, 40, 15);
             ctx.fillRect(600, 1250, 40, 15);
+        }
             // ... your menu closing bracket ends around line 165
-    } 
-    else if (gameState === "RULES") {
+       } 
+       else if (gameState === "RULES") {
         // 1. Clear with terminal black background
         ctx.fillStyle = "#000000";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -192,6 +193,12 @@
         for (let i = 0; i < linesToDraw.length; i++) {
             ctx.fillText(linesToDraw[i], 50, startY + (i * lineHeight));
         }
+        }
+         else if (gameState === "BATTLE") { // This continues your existing line 166!
+        ctx.drawImage(images.battle, 0, 0, canvas.width, canvas.height);
+         }
+        
+        
         }
         else if (gameState === "BATTLE") { // This continues your existing line 166!
         ctx.drawImage(images.battle, 0, 0, canvas.width, canvas.height);
