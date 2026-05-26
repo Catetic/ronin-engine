@@ -250,6 +250,20 @@
                 gameState = "BATTLE";
                 return;
             }
+            // Click detector for the secret link
+       if (!window.hasClickSetup) {
+        window.hasClickSetup = true;
+        canvas.addEventListener('click', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        // Change these numbers to match your button area (X, Y, Width, Height)
+        if (x > 50 && x < 250 && y > 100 && y < 200) {
+            window.open('blank.html', '_blank');
+        }
+        });
+        }
         } 
         
         // 2. TERMINAL INSTRUCTIONS WINDOW
