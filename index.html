@@ -99,7 +99,8 @@
     let toastTimer = 0;
     let inputCode = "";
     const masterPassword = "7777777";
-
+    let typeProgress = 0;      // Tracks how many letters have typed out
+    let lastTypeTime = 0;      // Tracks the speed of the typing effect
     const rulesText = [
         "THE CATETIC SIMULATION IS UNSTABLE.",
         "",
@@ -161,6 +162,40 @@
             ctx.stroke();
             ctx.fillRect(440, 1250, 40, 15);
             ctx.fillRect(600, 1250, 40, 15);
+            // ... your menu closing bracket ends around line 165
+    } 
+    else if (gameState === "RULES") {
+        // 1. Clear with terminal black background
+        ctx.fillStyle = "#000000";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // 2. Set the matrix style
+        ctx.fillStyle = "#00ff46";
+        ctx.font = "32px 'Courier New', Courier, monospace";
+        ctx.textAlign = "left";
+
+        // 3. Typewriter character progression ticker
+        let currentTime = Date.now();
+        if (currentTime - lastTypeTime > 30) { 
+            typeProgress++;
+            lastTypeTime = currentTime;
+        }
+
+        // 4. Extract and split the typewriter substring
+        let fullTextString = rulesText.join("\n");
+        let visibleText = fullTextString.substring(0, typeProgress);
+        let linesToDraw = visibleText.split("\n");
+
+        // 5. Draw the typed rows down the screen
+        let startY = 200; 
+        let lineHeight = 50;
+        for (let i = 0; i < linesToDraw.length; i++) {
+            ctx.fillText(linesToDraw[i], 50, startY + (i * lineHeight));
+        }
+        }
+        else if (gameState === "BATTLE") { // This continues your existing line 166!
+        ctx.drawImage(images.battle, 0, 0, canvas.width, canvas.height);
+        }    
         } 
         else if (gameState === "BATTLE") {
             ctx.drawImage(images.battle, 0, 0, canvas.width, canvas.height);
@@ -181,7 +216,7 @@
             ctx.drawImage(images.keypad, 0, 0, canvas.width, canvas.height);
             
             ctx.fillStyle = "#ff1a1a";
-            ctx.font = "bold 65px 'Courier New', monospace";
+            ctx.font = "bold 100px 'Courier New', monospace";
             ctx.textAlign = "center";
             ctx.fillText(inputCode || "CLOSED", 540, 320); 
             ctx.textAlign = "start"; 
@@ -225,10 +260,11 @@
                 toggleMusicSystem();
                 return;
             }
-            // Fine-tuned green RULES text link region
+            // // Fine-tuned green RULES text link region
             if (clickX > 20 && clickX < 240 && clickY > 1400 && clickY < 1520) {
-                gameState = "RULES";
-                return;
+            typeProgress = 0;  // <-- Add this right here to reset the typing progress!
+            gameState = "RULES";
+            return;
             }
             // Big red START action center button collider
             if (clickX > 240 && clickX < 840 && clickY > 1300 && clickY < 1650) {
