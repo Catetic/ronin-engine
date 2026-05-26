@@ -137,7 +137,7 @@
             ctx.fillStyle = musicPlaying ? "rgba(0, 255, 70, 0.8)" : "rgba(255, 26, 26, 0.8)";
             ctx.font = "bold 22px 'Courier New', monospace";
             ctx.textAlign = "center";
-            ctx.fillText(musicPlaying ? "[ AUDIO RUNNING ]" : "[ AUDIO MUTED ]", 540, 340);
+            ctx.fillText(musicPlaying ? "[ AUDIO RUNNING ]" : "[ AUDIO MUTED ]", 970, 1470);
             ctx.textAlign = "start";
         } 
         else if (gameState === "RULES") {
@@ -221,7 +221,7 @@
         // 1 & 2. MAIN MENU OVERLAYS
         if (gameState === "MENU") {
             // CATETIC Button Header Frame Bounds to toggle soundtrack playback loops
-            if (clickX > 150 && clickX < 930 && clickY > 80 && clickY < 380) {
+            if (clickX > 880 && clickX < 1060 && clickY > 1400 && clickY < 1520) {
                 toggleMusicSystem();
                 return;
             }
