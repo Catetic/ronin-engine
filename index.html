@@ -175,18 +175,21 @@
         ctx.font = "32px 'Courier New', Courier, monospace";
         ctx.textAlign = "left";
 
-        // 3. Typewriter character progression ticker
+        // 3. Typewriter character progression 
+        // // 3. Typewriter character progression ticker
+        if (typeof typeProgress === 'undefined') window.typeProgress = 0;
+        if (typeof lastTypeTime === 'undefined') window.lastTypeTime = 0;
+
         let currentTime = Date.now();
-        if (currentTime - lastTypeTime > 30) { 
-            typeProgress++;
-            lastTypeTime = currentTime;
+        if (currentTime - window.lastTypeTime > 30) { 
+            window.typeProgress++;
+            window.lastTypeTime = currentTime;
         }
 
-        // 4. Extract and split the typewriter substring
+        // // 4. Extract and split the typewriter substring
         let fullTextString = rulesText.join("\n");
-        let visibleText = fullTextString.substring(0, typeProgress);
+        let visibleText = fullTextString.substring(0, window.typeProgress);
         let linesToDraw = visibleText.split("\n");
-
         // 5. Draw the typed rows down the screen
         let startY = 200; 
         let lineHeight = 50;
