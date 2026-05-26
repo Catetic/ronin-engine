@@ -176,8 +176,12 @@
         ctx.textAlign = "left";
 
         // 3. Typewriter character progression 
-        // // 3. Typewriter character progression ticker        if (typeof window.typeProgress === 'undefined') window.typeProgress = 0;
-        if (typeof window.lastTypeTime === 'undefined') window.lastTypeTime = 0;
+        if (typeof window.typeProgress === 'undefined') {
+         window.typeProgress = 0;
+        }
+        if (typeof window.lastTypeTime === 'undefined') {
+            window.lastTypeTime = 0;
+        }
         let currentTime = Date.now();
         if (currentTime - window.lastTypeTime > 30) { 
             window.typeProgress++;
