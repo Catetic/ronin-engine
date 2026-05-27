@@ -155,7 +155,7 @@
 
        // 3. 
 
- if(gameState === "RULES") {
+     if(gameState === "RULES") {
     // 1. HARD TRACKING FIX: Ensure trackers exist and stay relevant
     if (typeof window.typeProgress === 'undefined' || !window.lastTypeTime) {
         window.typeProgress = 0;
@@ -217,7 +217,7 @@
     ctx.moveTo(centerX + radius, centerY); 
     ctx.arc(centerX, centerY, radius, 0, Math.PI, false);
     ctx.stroke();
-
+     }
        
        }
         else if (gameState === "BATTLE") {
