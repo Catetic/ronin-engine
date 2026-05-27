@@ -153,43 +153,43 @@
             ctx.font = "40px 'Courier New', Courier, monospace";
             ctx.textAlign = "left";
 
-       // 3. if(gameState === "RULES") {
+       // 3. if(If (gameState === "RULES") {
     // 1. HARD TRACKING FIX: Ensure trackers exist and stay relevant
     if (typeof window.typeProgress === 'undefined' || !window.lastTypeTime) {
         window.typeProgress = 0;
         window.lastTypeTime = Date.now();
     }
 
-    // 2. Reference the original global lore vault array
-    // (Ensure rulesText array lines 105-123 remains defined above your gameLoop)
+    // 2. Define text content
+    const rulesText = ["RULE 1: ENTER THE MATRIX.", "RULE 2: TRUST NO CAT.", "RULE 3: DRINK WATER."];
     let fullTextString = rulesText.join("\n");
 
     // 3. Robust Increment logic
     let currentTime = Date.now();
     if (currentTime - window.lastTypeTime > 30) {
-        if (.typeProgress < fullTextString.length) {
-            typeProgress++;
+        if (window.typeProgress < fullTextString.length) {
+            window.typeProgress++;
         }
-        window.lastTypeTime = currentTime; 
+        window.lastTypeTime = currentTime; // Core fix: use normalized variable
     }
 
-    // 4.     // 4. Render text - Explicit styling to bypass Safari bugs
+    // 4. Render text - Explicit styling to bypass Safari bugs
     ctx.fillStyle = "#00ff46";
-    ctx.font = "bold 22px 'Courier New', monospace"; 
-    ctx.textBaseline = "top"; 
+    ctx.font = "bold 22px Courier New, monospace"; // Added fallback system font for WebKit
+    ctx.textBaseline = "top"; // Forces alignment anchor calculation
 
-    // Safety fallback
-    let displayProgress = typeProgress > 0 ? typeProgress : 1;
+    // Safety fallback: if progress is stuck at 0 for some reason, force it to show at least 1 char
+    let displayProgress = window.typeProgress > 0 ? window.typeProgress : 1;
     let currentSlice = fullTextString.substring(0, displayProgress);
     let linesToDraw = currentSlice.split("\n");
 
-    let startY = 80; 
-    let lineHeight = 35; 
+    let startY = 120; 
+    let lineHeight = 40; 
     for (let i = 0; i < linesToDraw.length; i++) {
+        // Remove empty check restriction to ensure partial rendering engine passes strings safely
         ctx.fillText(linesToDraw[i], 30, startY + (i * lineHeight));
     }
 
-    l
     // 5. Matrix Smile (Kept exactly as seen in your image since it works!)
     ctx.strokeStyle = "#00ff46"; 
     ctx.lineWidth = 6;           
@@ -214,8 +214,8 @@
     let radius = canvas.width * 0.15; 
     ctx.moveTo(centerX + radius, centerY); 
     ctx.arc(centerX, centerY, radius, 0, Math.PI, false);
-    ctx.stroke();
-     
+    ctx.stroke();ga
+        }
        
        }
         else if (gameState === "BATTLE") {
