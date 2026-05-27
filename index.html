@@ -192,14 +192,16 @@
         else if (gameState === "VIP_LOUNGE_2") {
             ctx.drawImage(images.lounge2, 0, 0, canvas.width, canvas.height);
         } 
-        else if (gameState === "KEYPAD") {
-            ctx.drawImage(images.keypad, 0, 0, canvas.width, canvas.height);
-            
-            ctx.fillStyle = "#ff1a1a";
-            ctx.font = "bold 100px 'Courier New', monospace";
-            ctx.textAlign = "center";
-            ctx.fillText(inputCode || "CLOSED", 540, 320); 
-            ctx.textAlign = "start"; 
+        // --- DYNAMIC LED SCREEN RENDER ---
+          ctx.font = "bold 45px 'Courier New', monospace";
+           ctx.textAlign = "center";
+           ctx.fillStyle = "#ffb834"; // 🌟 Matches the glowing warm gold/silver of the big button lens!
+
+        if (currentEnteredCode.length === 0) {
+            ctx.fillText("CLOSED", 680, 180); // Centers perfectly inside your blue box layout
+        } else {
+            ctx.fillText(currentEnteredCode, 680, 180); // Shows digits or error states
+        }    
         } 
         else if (gameState === "GAME_ROOM") {
             ctx.drawImage(images.gameroom, 0, 0, canvas.width, canvas.height);
@@ -324,20 +326,24 @@
             }
         } 
         
-        // 8. COPPER KEYPAD DOOR AUTHENTICATOR INTERFACE (IMG_
+        // 8. COPPER KEYPAD DOOR AUTHENTICATOR INTERFACE (
         // 8. COPPER KEYPAD DOOR AUTHENTICATOR INTERFACE (IMG_9058)
-     else if (gameState === "KEYPAD") {
-    
-    // 🔘 THE BIG SILVER BUTTON (Bypass / Escape Hatch to Main Game)
-    // Targets the lower left metallic dial area
+else if (gameState === "KEYPAD") {
+
+    // 🔘 THE BIG SILVER BUTTON (Bypass Warning Alert)
     if (clickX > 30 && clickX < 280 && clickY > 1050 && clickY < 1350) {
-        currentEnteredCode = ""; // Clean memory buffer
-        gameState = "CHOOSE";    // Teleport back to original game loop!
+        alert("[next home]"); 
         return;
     }
 
-    // 🔢 THE NUMBER KEYPAD GRID
+    // 🔢 NUMERIC INPUT GRID
     if (clickY > 580 && clickY < 1500) {
+        
+        // Don't let them type if the screen is currently displaying an error message
+        if (currentEnteredCode === "ERROR" || currentEnteredCode === "WRONG") {
+            currentEnteredCode = ""; // Clean it on next tap
+        }
+
         // ROW 1: Buttons 1, 2, 3
         if (clickY > 580 && clickY < 760) {
             if (clickX > 320 && clickX < 500) registerKey("1");
@@ -350,7 +356,7 @@
             else if (clickX > 530 && clickX < 710) registerKey("5");
             else if (clickX > 740 && clickX < 920) registerKey("6");
         }
-        // ROW 3: Buttons 7, 8, 9 
+        // ROW 3: Buttons 7, 8, 9
         else if (clickY > 1020 && clickY < 1200) {
             if (clickX > 320 && clickX < 500) registerKey("7");
             else if (clickX > 530 && clickX < 710) registerKey("8");
@@ -359,21 +365,23 @@
         // ROW 4: Buttons 0, K, C
         else if (clickY > 1240 && clickY < 1420) {
             if (clickX > 320 && clickX < 500) registerKey("0");
+            
+            // 🔑 'K' KEY: SUBMIT & VERIFY CODE
             else if (clickX > 530 && clickX < 710) {
-                // 'K' KEY: SUBMIT & UNLOCK THE SANCTUARY
-                if (currentEnteredCode === "7777") { // Set your secret code here!
-                    gameState = "SECRET_ROOM"; 
+                if (currentEnteredCode === "7777") { // 🛑 Put your master password here!
+                    gameState = "SECRET_ROOM"; // Password correct! Moves to secret room state
                 } else {
-                    currentEnteredCode = ""; // Fail state resets buffer
+                    currentEnteredCode = "ERROR"; // Flashes ERROR on the gold display!
                 }
             }
+            
+            // 🧼 'C' KEY: CLEAR DISPLAY BUFFER
             else if (clickX > 740 && clickX < 920) {
-                // 'C' KEY: CLEAR CURRENT CODE
-                currentEnteredCode = ""; 
+                currentEnteredCode = ""; // Resets the screen right back to "CLOSED"
             }
             }
             }
-            }
+             }
         // 9. UNLOCKED SECRET GAME ROOM (IMG_9044)
         else if (gameState === "GAME_ROOM") {
             gameState = "MENU"; // Resets back onto entry point safely
@@ -412,7 +420,7 @@
                 inputCode = "ERROR";
                 setTimeout(() => { inputCode = ""; }, 900);
             }
-        } else {
+        } else { 
             if (inputCode === "ERROR" || inputCode.length >= 7) {
                 inputCode = "";
             }
