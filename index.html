@@ -211,10 +211,10 @@
         ctx.drawImage(images.secretroom, 0, 0, 1080, 1920);
        }
         else if (gameState === "GAME_ROOM") {
-        ctx.drawImage(images.gameroom, 0, 0, 1080, 1920);
+        ctx.drawImage(images.gameroom, 0, 0,canvas.width, canvas.height);
         }
 
-        // Clipboards notification confirmation alert
+        // Clipboardsu notification confirmation alert
         if (toastTimer > 0) {
             ctx.fillStyle = "rgba(0, 255, 70, 0.9)";
             ctx.fillRect(240, 80, 600, 100);
