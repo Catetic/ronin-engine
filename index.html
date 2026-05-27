@@ -192,20 +192,25 @@
         else if (gameState === "VIP_LOUNGE_2") {
             ctx.drawImage(images.lounge2, 0, 0, canvas.width, canvas.height);
         } 
-             // --- 8. COPPER KEYPAD RENDER ENGINE (IMG_9058) ---
+            // --- 8. COPPER KEYPAD RENDER ENGINE (IMG_9058) ---
     else if (gameState === "KEYPAD") {
         ctx.drawImage(images.keypad, 0, 0, 1080, 1920);
 
-        // Render Configuration - BIGGER AND DROPPED LOWER
-        ctx.font = "bold 56px 'Courier New', monospace"; // Huge, bold arcade display
+        // Render Configuration - Perfect Size & Positioning
+        ctx.font = "bold 56px 'Courier New', monospace"; 
         ctx.textAlign = "center";
-        ctx.fillStyle = "#ffb834"; // 🌟 Warm gold button lens hue
+        ctx.fillStyle = "#ffb834"; 
 
         if (inputCode.length === 0) {
-            ctx.fillText("CLOSED", 680, 240); // Sits perfectly centered on the LED plate!
+            ctx.fillText("CLOSED", 680, 240); 
         } else {
-            ctx.fillText(inputCode, 680, 240); // Tracks numbers, errors, or custom clues
+            ctx.fillText(inputCode, 680, 240); 
         }
+    }
+    
+    // --- 10. SECRET SANCTUARY UNLOCKED (IMG_8603) ---
+    else if (gameState === "SECRET_ROOM") {
+        ctx.drawImage(images.secretrooom, 0, 0, 1080, 1920); 
     }
     
     // --- 10. SECRET SANCTUARY UNLOCKED (IMG_8603) ---
@@ -340,64 +345,62 @@
                 inputCode = ""; 
             }
         } 
-                      // 8. COPPER KEYPAD DOOR AUTHENTICATOR INTERFACE (IMG_9058)
+                  // 8. COPPER KEYPAD DOOR AUTHENTICATOR INTERFACE (IMG_9058)
         else if (gameState === "KEYPAD") {
 
             // 🔘 THE BIG SILVER BUTTON (Escape Hatch / Clue Toggle)
             if (clickX > 30 && clickX < 250 && clickY > 1050 && clickY < 1350) {
                 if (inputCode === "[next home]") {
-                    // Second consecutive press triggers escape mechanism!
                     inputCode = ""; 
-                    gameState = "CHOOSE"; // Teleport player back to main page loop
+                    gameState = "MENU"; // Redirects straight back to your home menu scene
                 } else {
-                    // First press loads the hint string directly on the LED screen
                     inputCode = "[next home]";
                 }
                 return;
             }
 
-            // 🔢 NUMERIC INPUT GRID
-            if (clickY > 580 && clickY < 1500) {
+            // 🔢 NUMERIC INPUT GRID (Shifted UP to perfectly catch your finger taps!)
+            if (clickY > 540 && clickY < 1460) {
                 
-                // Instantly wipe text notifications (CLOSED, ERROR, COOOOL, Hints) when starting a new type sequence
+                // Instantly wipe notification phrases when starting to type a fresh number sequence
                 if (inputCode === "CLOSED" || inputCode === "ERROR" || inputCode === "[next home]" || inputCode === "COOOOL") {
                     inputCode = ""; 
                 }
 
-                // ROW 1: Buttons 1, 2, 3 (Allows up to 9 total digits on screen!)
-                if (clickY > 580 && clickY < 760) {
+                // ROW 1: Buttons 1, 2, 3 (Shifted UP)
+                if (clickY > 540 && clickY < 730) {
                     if (clickX > 320 && clickX < 500 && inputCode.length < 9) registerKey("1");
                     else if (clickX > 530 && clickX < 710 && inputCode.length < 9) registerKey("2");
                     else if (clickX > 740 && clickX < 920 && inputCode.length < 9) registerKey("3");
                 }
-                // ROW 2: Buttons 4, 5, 6
-                else if (clickY > 800 && clickY < 980) {
+                // ROW 2: Buttons 4, 5, 6 (Shifted UP)
+                else if (clickY > 760 && clickY < 950) {
                     if (clickX > 320 && clickX < 500 && inputCode.length < 9) registerKey("4");
                     else if (clickX > 530 && clickX < 710 && inputCode.length < 9) registerKey("5");
                     else if (clickX > 740 && clickX < 920 && inputCode.length < 9) registerKey("6");
                 }
-                // ROW 3: Buttons 7, 8, 9
-                else if (clickY > 1020 && clickY < 1200) {
+                // ROW 3: Buttons 7, 8, 9 (Shifted UP - matches your 8 target perfectly now!)
+                else if (clickY > 980 && clickY < 1170) {
                     if (clickX > 320 && clickX < 500 && inputCode.length < 9) registerKey("7");
                     else if (clickX > 530 && clickX < 710 && inputCode.length < 9) registerKey("8");
                     else if (clickX > 740 && clickX < 920 && inputCode.length < 9) registerKey("9");
                 }
-                // ROW 4: Buttons 0, K, C
-                else if (clickY > 1240 && clickY < 1420) {
+                // ROW 4: Buttons 0, K, C (Shifted UP)
+                else if (clickY > 1200 && clickY < 1390) {
                     if (clickX > 320 && clickX < 500 && inputCode.length < 9) registerKey("0");
                     
-                    // 🔑 'K' KEY: SUBMIT & VERIFY THE 49 RONINS hand-shake
+                    // 🔑 'K' KEY: THE 49 RONINS VALIDATION (Exactly 7 sevens)
                     else if (clickX > 530 && clickX < 710) {
-                        if (inputCode === "7777777") { // ⚔️ EXACTLY 7 SEVENS UNLOCKS THE HYPNOTIC KYŌSO MASTER!
-                            gameState = "SECRET_ROOM"; 
+                        if (inputCode === "7777777") { 
+                            gameState = "SECRET_ROOM"; // Kyōso master successfully steps out!
                         } else {
-                            inputCode = "ERROR"; // Any other combination (longer or shorter) fails instantly!
+                            inputCode = "ERROR"; 
                         }
                     }
                     
-                    // 🧼 'C' KEY: MANUAL RESET TWIST 😹
+                    // 🧼 'C' KEY: COOOOL CLEAR TRICK 😹
                     else if (clickX > 740 && clickX < 920) {
-                        inputCode = "COOOOL"; // Flashes across the gold LED screen!
+                        inputCode = "COOOOL"; 
                     }
                 }
             }
