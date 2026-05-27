@@ -153,70 +153,70 @@
             ctx.font = "47px 'Courier New', Courier, monospace";
             ctx.textAlign = "left";
 
-       // 3.  // 1. Initialize global state trackers once
-if (typeof window.typeProgress === 'undefined') {
-    window.typeProgress = 0;
-    window.lastTypeTime = Date.now();
-}
-
-// 2. Define text content
-const rulesText = ["RULE 1: ENTER THE MATRIX.", "RULE 2: TRUST NO CAT.", "RULE 3: DRINK WATER."];
-let fullTextString = rulesText.join("\n");
-
-// 3. Increment progress
-if (Date.now() - window.lastTypeTime > 30) {
-    if (window.typeProgress < fullTextString.length) {
-        window.typeProgress++;
+       // 3.  if (gameState === "RULES") {
+    // 1. HARD TRACKING FIX: Ensure trackers exist and stay relevant
+    if (typeof window.typeProgress === 'undefined' || !window.lastTypeTime) {
+        window.typeProgress = 0;
+        window.lastTypeTime = Date.now();
     }
-    window.lastTypeTime = Date.now();
-}
 
-// 4. Render text safely
-ctx.fillStyle = "#00ff46";
-ctx.font = "47px monospace"; 
+    // 2. Define text content
+    const rulesText = ["RULE 1: ENTER THE MATRIX.", "RULE 2: TRUST NO CAT.", "RULE 3: DRINK WATER."];
+    let fullTextString = rulesText.join("\n");
 
-// Get slice and split, filtering out corrupted trailing empties if necessary
-let currentSlice = fullTextString.substring(0, window.typeProgress);
-let linesToDraw = currentSlice.split("\n");
-
-let startY = 150; 
-let lineHeight = 65;
-for (let i = 0; i < linesToDraw.length; i++) {
-    // Only render if there is actual text content in the line split
-    if (linesToDraw[i].length > 0) {
-        ctx.fillText(linesToDraw[i], 50, startY + (i * lineHeight));
+    // 3. Robust Increment logic
+    let currentTime = Date.now();
+    if (currentTime - window.lastTypeTime > 30) {
+        if (window.typeProgress < fullTextString.length) {
+            window.typeProgress++;
+        }
+        window.lastTypeTime = currentTime; // Core fix: use normalized variable
     }
-}
 
-// 5. Draw Matrix Smile (Fixed Path Isolation)
-ctx.strokeStyle = "#00ff46"; 
-ctx.lineWidth = 8;           
-ctx.lineCap = "round";
+    // 4. Render text - Explicit styling to bypass Safari bugs
+    ctx.fillStyle = "#00ff46";
+    ctx.font = "bold 22px Courier New, monospace"; // Added fallback system font for WebKit
+    ctx.textBaseline = "top"; // Forces alignment anchor calculation
 
-// --- Left Eye ---
-ctx.beginPath();
-ctx.moveTo(canvas.width * 0.35, canvas.height * 0.72);
-ctx.lineTo(canvas.width * 0.42, canvas.height * 0.72);
-ctx.stroke();
+    // Safety fallback: if progress is stuck at 0 for some reason, force it to show at least 1 char
+    let displayProgress = window.typeProgress > 0 ? window.typeProgress : 1;
+    let currentSlice = fullTextString.substring(0, displayProgress);
+    let linesToDraw = currentSlice.split("\n");
 
-// --- Right Eye ---
-ctx.beginPath();
-ctx.moveTo(canvas.width * 0.58, canvas.height * 0.72);
-ctx.lineTo(canvas.width * 0.65, canvas.height * 0.72);
-ctx.stroke();
+    let startY = 120; 
+    let lineHeight = 40; 
+    for (let i = 0; i < linesToDraw.length; i++) {
+        // Remove empty check restriction to ensure partial rendering engine passes strings safely
+        ctx.fillText(linesToDraw[i], 30, startY + (i * lineHeight));
+    }
 
-// --- Big Smile Mouth ---
-ctx.beginPath();
-// Set arc parameters explicitly
-let centerX = canvas.width * 0.5;
-let centerY = canvas.height * 0.75;
-let radius = canvas.width * 0.18;
+    // 5. Matrix Smile (Kept exactly as seen in your image since it works!)
+    ctx.strokeStyle = "#00ff46"; 
+    ctx.lineWidth = 6;           
+    ctx.lineCap = "round";
 
-// Explicitly move the pen to the start point of the arc to prevent connecting lines from the eyes
-ctx.moveTo(centerX + radius, centerY); 
-ctx.arc(centerX, centerY, radius, 0, Math.PI, false);
-ctx.stroke();
-    
+    // Left Eye
+    ctx.beginPath();
+    ctx.moveTo(canvas.width * 0.35, canvas.height * 0.72);
+    ctx.lineTo(canvas.width * 0.42, canvas.height * 0.72);
+    ctx.stroke();
+
+    // Right Eye
+    ctx.beginPath();
+    ctx.moveTo(canvas.width * 0.58, canvas.height * 0.72);
+    ctx.lineTo(canvas.width * 0.65, canvas.height * 0.72);
+    ctx.stroke();
+
+    // Smile Mouth
+    ctx.beginPath();
+    let centerX = canvas.width * 0.5;
+    let centerY = canvas.height * 0.75;
+    let radius = canvas.width * 0.15; 
+    ctx.moveTo(centerX + radius, centerY); 
+    ctx.arc(centerX, centerY, radius, 0, Math.PI, false);
+    ctx.stroke();
+
+
             
         }
         else if (gameState === "BATTLE") {
