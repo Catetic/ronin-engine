@@ -153,10 +153,10 @@
             ctx.font = "47px 'Courier New', Courier, monospace";
             ctx.textAlign = "left";
 
-                    // 3. Typewriter character progression
-        if (typeof window.typeProgress === 'undefined') {
-            window.typeProgress = 1;
-            window.lastTypeTime = Date.now();
+       // 3. Typewriter character progression
+        if (!window.typeProgress === 'undefined') {
+             window.typeProgress = 500;
+        
         }
 
         if (Date.now() - window.lastTypeTime > 30) {
