@@ -192,7 +192,7 @@
         else if (gameState === "VIP_LOUNGE_2") {
             ctx.drawImage(images.lounge2, 0, 0, canvas.width, canvas.height);
         } 
-            // --- 8. COPPER KEYPAD RENDER ENGINE (IMG_9058) ---
+            //     // --- 8. COPPER KEYPAD RENDER ENGINE (IMG_9058) ---
     else if (gameState === "KEYPAD") {
         ctx.drawImage(images.keypad, 0, 0, 1080, 1920);
 
@@ -206,14 +206,17 @@
         } else {
             ctx.fillText(inputCode, 680, 240); 
         }
-       // --- 10. SECRET SANCTUARY UNLOCKED (IMG_8603) ---
-        else if (gameState === "SECRET_ROOM") {
-        // Corrected spelling to match your 3-O file registry!
+    } // <--- THIS BRACKET SEPARATES THE KEYPAD FROM THE SANCTUARY!
+    
+    // --- 10. SECRET SANCTUARY UNLOCKED (IMG_8603) ---
+    else if (gameState === "SECRET_ROOM") {
         ctx.drawImage(images.secretrooom, 0, 0, 1080, 1920); 
     }
-        else if (gameState === "GAME_ROOM") {
-            ctx.drawImage(images.gameroom, 0, 0, canvas.width, canvas.height);
-        }
+    
+    // --- 11. GAME ROOM SCENE ---
+    else if (gameState === "GAME_ROOM") {
+        ctx.drawImage(images.gameroom, 0, 0, 1080, 1920);
+    }
 
         // Clipboards notification confirmation alert
         if (toastTimer > 0) {
