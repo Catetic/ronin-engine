@@ -192,21 +192,22 @@
         else if (gameState === "VIP_LOUNGE_2") {
             ctx.drawImage(images.lounge2, 0, 0, canvas.width, canvas.height);
         } 
-            // --- 8. COPPER KEYPAD RENDER ENGINE (IMG_9058) ---
+           // --- 8. COPPER KEYPAD RENDER ENGINE (IMG_9058) ---
     else if (gameState === "KEYPAD") {
-        // Draws the copper keypad background image safely
         ctx.drawImage(images.keypad, 0, 0, 1080, 1920);
 
-        // Draws your custom gold numbers layer perfectly inside the right-side box
-        ctx.font = "bold 45px 'Courier New', monospace";
+        // Render Configuration
+        ctx.font = "bold 42px 'Courier New', monospace"; // Slightly smaller to fit "[next home]" perfectly
         ctx.textAlign = "center";
-        ctx.fillStyle = "#ffb834"; // 🌟 Match that big beautiful silver dial light!
+        ctx.fillStyle = "#ffb834"; // Beautiful matching gold button tint!
 
+        // If string is completely empty, default to standard system text
         if (currentEnteredCode.length === 0) {
             ctx.fillText("CLOSED", 680, 180);
         } else {
             ctx.fillText(currentEnteredCode, 680, 180);
         }
+    }
     }
     
     // --- 10. SECRET SANCTUARY UNLOCKED (IMG_8603) ---
@@ -337,22 +338,22 @@
             }
         } 
         
-        // 8. COPPER KEYPAD DOOR AUTHENTICATOR INTERFACE (
+        // 8. 
         // 8. COPPER KEYPAD DOOR AUTHENTICATOR INTERFACE (IMG_9058)
 else if (gameState === "KEYPAD") {
 
-    // 🔘 THE BIG SILVER BUTTON (Bypass Warning Alert)
-    if (clickX > 30 && clickX < 280 && clickY > 1050 && clickY < 1350) {
-        alert("[next home]"); 
+    // 🔘 THE BIG SILVER BUTTON (Bypass Hint State - Tuned bounds!)
+    if (clickX > 30 && clickX < 250 && clickY > 1050 && clickY < 1350) {
+        currentEnteredCode = "[next home]"; // Prints directly to the LED glass screen!
         return;
     }
 
     // 🔢 NUMERIC INPUT GRID
     if (clickY > 580 && clickY < 1500) {
         
-        // Don't let them type if the screen is currently displaying an error message
-        if (currentEnteredCode === "ERROR" || currentEnteredCode === "WRONG") {
-            currentEnteredCode = ""; // Clean it on next tap
+        // Clear out system states (CLOSED, ERROR, Hints) automatically when typing a fresh number
+        if (currentEnteredCode === "CLOSED" || currentEnteredCode === "ERROR" || currentEnteredCode === "[next home]") {
+            currentEnteredCode = ""; 
         }
 
         // ROW 1: Buttons 1, 2, 3
@@ -377,22 +378,22 @@ else if (gameState === "KEYPAD") {
         else if (clickY > 1240 && clickY < 1420) {
             if (clickX > 320 && clickX < 500) registerKey("0");
             
-            // 🔑 'K' KEY: SUBMIT & VERIFY CODE
+            // 🔑 'K' KEY: SUBMIT & VERIFY PASSPHRASE
             else if (clickX > 530 && clickX < 710) {
-                if (currentEnteredCode === "7777") { // 🛑 Put your master password here!
-                    gameState = "SECRET_ROOM"; // Password correct! Moves to secret room state
+                if (currentEnteredCode === "7777") { // Your vault code!
+                    gameState = "SECRET_ROOM"; 
                 } else {
-                    currentEnteredCode = "ERROR"; // Flashes ERROR on the gold display!
+                    currentEnteredCode = "ERROR"; // Flash fault text on screen
                 }
             }
             
-            // 🧼 'C' KEY: CLEAR DISPLAY BUFFER
+            // 🧼 'C' KEY: MANUAL RESET
             else if (clickX > 740 && clickX < 920) {
-                currentEnteredCode = ""; // Resets the screen right back to "CLOSED"
+                currentEnteredCode = ""; // Resets back to default
             }
-            }
-            }
-             }
+        }
+    }
+}
         // 9. UNLOCKED SECRET GAME ROOM (IMG_9044)
         else if (gameState === "GAME_ROOM") {
             gameState = "MENU"; // Resets back onto entry point safely
