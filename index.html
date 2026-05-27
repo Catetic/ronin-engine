@@ -153,69 +153,45 @@
             ctx.font = "47px 'Courier New', Courier, monospace";
             ctx.textAlign = "left";
 
-       // 3. if (gameState === "RULES") {
-    // 1. Initialize typing state safely
-    if (typeof window.typeProgress === 'undefined' || !window.lastTypeTime) {
-        window.typeProgress = 0;
-        window.lastTypeTime = Date.now();
+       // 3. // Line 156:
+if (gameState === "RULES") {
+
+    // 1. Core State Tracking Update (No redundant 'const' or 'let' initializers)
+    if (typeof typeProgress === 'undefined') {
+        typeProgress = 0;
+        lastTypeTime = Date.now();
     }
 
-    // 2. Original Text Array - Explicitly structured for canvas boundaries
-    const rulesText = [
-        "Hello Neo... 😹",
-        "",
-        "THE CATETIC SIMULATION IS UNSTABLE.",
-        "",
-        "--- CHOOSE YOUR ALIGNMENT ---",
-        "🔵 SAMURAI CAT (LEFT): THE BLUE PILL",
-        "PATH. FIGHT FOR FREEDOM WITH ONE FAST",
-        "ATTACK BUTTON. SURPASS 6 CLICKS PER",
-        "SECOND TO BREAK OUT.",
-        "",
-        "🔴 NINJA CAT (RIGHT): THE RED PILL TRAP.",
-        "RIGGED BY THE ARCHITECT. CHOOSING THIS",
-        "SIDE LEADS TO COMPLETE CRASH.",
-        "",
-        "WARNING: ONCE 'DRINK WATER' IS PRESRESSED,",
-        "THE SYSTEM WILL INJECT 150 BPM CHAOS.",
-        "THERE IS NO WAY BACK.",
-        "",
-        "-> TAP ANYWHERE TO EXIT TERMINAL _"
-    ];
-
-    // Combine into a single master string to preserve the scrolling typewriter effect mechanics
+    // 2. Combine the globally declared array
     let fullTextString = rulesText.join("\n");
 
     // 3. Typewriter Frame Increment
     let currentTime = Date.now();
-    if (currentTime - window.lastTypeTime > 25) { // Slightly speed up typing for longer text
-        if (window.typeProgress < fullTextString.length) {
-            window.typeProgress++;
+    if (currentTime - lastTypeTime > 25) {
+        if (typeProgress < fullTextString.length) {
+            typeProgress++;
         }
-        window.lastTypeTime = currentTime;
+        lastTypeTime = currentTime;
     }
 
-    // 4. Adaptive Responsive Sizing
+    // 4. Clean Canvas Render Target
     let isMobile = canvas.width < 500;
     ctx.fillStyle = "#00ff46";
-    // Scale font dynamically: 16px on mobile prevents side clipping entirely
-    ctx.font = isMobile ? "bold 16px Courier New, monospace" : "bold 24px Courier New, monospace";
+    ctx.font = isMobile ? "bold 15px Courier New, monospace" : "bold 24px Courier New, monospace";
     ctx.textBaseline = "top";
 
-    // Slice the master string based on typing progress, then segment into display lines
-    let currentSlice = fullTextString.substring(0, window.typeProgress);
+    let currentSlice = fullTextString.substring(0, typeProgress);
     let linesToDraw = currentSlice.split("\n");
 
-    // Dynamic vertical layout positioning
-    let startY = isMobile ? 60 : 100; 
-    let lineHeight = isMobile ? 26 : 38; 
+    let startY = isMobile ? 50 : 100; 
+    let lineHeight = isMobile ? 24 : 38; 
     let startX = isMobile ? 20 : 50;
 
     for (let i = 0; i < linesToDraw.length; i++) {
         ctx.fillText(linesToDraw[i], startX, startY + (i * lineHeight));
     }
 
-    // 5. Matrix Smile (Preserved and dynamically pinned beneath the text layout)
+    // 5. Isolated Path Drawing Engine (Smile)
     ctx.strokeStyle = "#00ff46"; 
     ctx.lineWidth = isMobile ? 5 : 8;           
     ctx.lineCap = "round";
@@ -232,17 +208,16 @@
     ctx.lineTo(canvas.width * 0.62, canvas.height * 0.85);
     ctx.stroke();
 
-    // Smile Mouth
+    // Smile
     ctx.beginPath();
     let centerX = canvas.width * 0.5;
     let centerY = canvas.height * 0.86;
-    let radius = isMobile ? canvas.width * 0.15 : canvas.width * 0.12; 
+    let radius = isMobile ? canvas.width * 0.14 : canvas.width * 0.12; 
     ctx.moveTo(centerX + radius, centerY); 
-    ctx.arc(centerX, centerY, radius, 0, Math.PI, 
+    ctx.arc(centerX, centerY, radius, 0, Math.PI, false);
+    ctx.stroke();
 
-
-
-            
+    
         }
         else if (gameState === "BATTLE") {
             ctx.drawImage(images.battle, 0, 0, canvas.width, canvas.height);
