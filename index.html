@@ -154,51 +154,50 @@
             ctx.textAlign = "left";
 
                     // 3. Typewriter character progression
-         if (window.typeProgress === undefined) {
+        if (typeof window.typeProgress === 'undefined') {
             window.typeProgress = 0;
             window.lastTypeTime = Date.now();
-            }
+        }
 
-          if (Date.now() - window.lastTypeTime > 40) {
+        if (Date.now() - window.lastTypeTime > 30) {
             window.typeProgress++;
             window.lastTypeTime = Date.now();
-             }
+        }
 
+        // 4. Extract and split the typewriter substring
+        let fullTextString = rulesText.join("\n");
+        let visibleText = fullTextString.substring(0, window.typeProgress);
+        let linesToDraw = visibleText.split("\n");
 
-            // 4. Extract and split the typewriter substring
-            let fullTextString = rulesText.join("\n");
-            let visibleText = fullTextString.substring(0, window.typeProgress);
-            let linesToDraw = visibleText.split("\n");
-            
-            // 5. Draw the typed rows down the screen
-            let startY = 200; 
-            let lineHeight = 70;
-            for (let i = 0; i < linesToDraw.length; i++) {
-               ctx.fillText(linesToDraw[i], 50, startY + (i * lineHeight));
-             
-            }
-            // Draw the Big Green Matrix Smile
-           bbctx.strokeStyle = "#00ff46"; // Matrix Green
-           bbctx.lineWidth = 8;           // Nice thick line
-           ctx.lineCap = "round";
+        // 5. Draw the typed rows down the screen
+        let startY = 150; 
+        let lineHeight = 65;
+        for (let i = 0; i < linesToDraw.length; i++) {
+            ctx.fillText(linesToDraw[i], 50, startY + (i * lineHeight));
+        }
 
-           // 1. Left Eye (Arcade dash)
-            ctx.beginPath();
-            ctx.moveTo(canvas.width * 0.35, canvas.height * 0.60);
-            ctx.lineTo(canvas.width * 0.45, canvas.height * 0.60);
-            ctx.stroke();
+        // 6. Draw the Big Green Matrix Smile
+        ctx.strokeStyle = "#00ff46"; 
+        ctx.lineWidth = 8;           
+        ctx.lineCap = "round";
 
-         // 2. Right Eye (Arcade dash)
-         ctx.beginPath();
-         ctx.moveTo(canvas.width * 0.55, canvas.height * 0.60);
-         ctx.lineTo(canvas.width * 0.65, canvas.height * 0.60);
-          ctx.stroke();
+        // Left Eye
+        ctx.beginPath();
+        ctx.moveTo(canvas.width * 0.35, canvas.height * 0.72);
+        ctx.lineTo(canvas.width * 0.45, canvas.height * 0.72);
+        ctx.stroke();
 
-         // 3. Big Smirk Mouth
-          ctx.beginPath();
-        // Parameters: ctx.arc(centerX, centerY, radius, startAngle, endAngle)
-         ctx.arc(canvas.width * 0.5, canvas.height * 0.65, canvas.width * 0.25, 0, Math.PI, false);
-         ctx.stroke();
+        // Right Eye
+        ctx.beginPath();
+        ctx.moveTo(canvas.width * 0.55, canvas.height * 0.72);
+        ctx.lineTo(canvas.width * 0.65, canvas.height * 0.72);
+        ctx.stroke();
+
+        // Big Smile Mouth
+        ctx.beginPath();
+        ctx.arc(canvas.width * 0.5, canvas.height * 0.72, canvas.width * 0.18, 0, Math.PI, false);
+        ctx.stroke();
+        }
 
             
         }
