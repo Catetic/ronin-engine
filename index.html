@@ -153,51 +153,51 @@
             ctx.font = "47px 'Courier New', Courier, monospace";
             ctx.textAlign = "left";
 
-       // 3. Typewriter character progression
-        if (!window.typeProgress) {
-             window.typeProgress = 500;
-        
-        }
+       // 3. // 1. Initialize global state trackers once
+if (typeof window.typeProgress === 'undefined') {
+    window.typeProgress = 0;
+    window.lastTypeTime = Date.now();
+}
 
-        if (Date.now() - window.lastTypeTime > 30) {
-            window.typeProgress++;
-            window.lastTypeTime = Date.now();
-        }
+// 2. Define text content
+const rulesText = ["RULE 1: ENTER THE MATRIX.", "RULE 2: TRUST NO CAT.", "RULE 3: DRINK WATER."];
+let fullTextString = rulesText.join("\n");
 
-        // 4. Extract and split the typewriter substring
-        let fullTextString = rulesText.join("\n");
-        let visibleText = fullTextString.substring(0, window.typeProgress);
-        let linesToDraw = visibleText.split("\n");
+// 3. Increment progress
+if (Date.now() - window.lastTypeTime > 30) {
+    if (window.typeProgress < fullTextString.length) {
+        window.typeProgress++;
+    }
+    window.lastTypeTime = Date.now();
+}
 
-        // 5. Draw the typed rows down the screen
-        let startY = 150; 
-        let lineHeight = 65;
-        for (let i = 0; i < linesToDraw.length; i++) {
-            ctx.fillText(linesToDraw[i], 50, startY + (i * lineHeight));
-        }
+// 4. Render text
+ctx.fillStyle = "#00ff46";
+ctx.font = "47px monospace"; // Reverted to 47px
+let linesToDraw = fullTextString.substring(0, window.typeProgress).split("\n");
 
-        // 6. Draw the Big Green Matrix Smile
-        ctx.strokeStyle = "#00ff46"; 
-        ctx.lineWidth = 8;           
-        ctx.lineCap = "round";
+let startY = 150; 
+let lineHeight = 65;
+for (let i = 0; i < linesToDraw.length; i++) {
+    ctx.fillText(linesToDraw[i], 50, startY + (i * lineHeight));
+}
 
-        // Left Eye
-        ctx.beginPath();
-        ctx.moveTo(canvas.width * 0.35, canvas.height * 0.72);
-        ctx.lineTo(canvas.width * 0.45, canvas.height * 0.72);
-        ctx.stroke();
+// 5. Draw Matrix Smile
+ctx.strokeStyle = "#00ff46"; 
+ctx.lineWidth = 8;           
+ctx.lineCap = "round";
+ctx.beginPath();
 
-        // Right Eye
-        ctx.beginPath();
-        ctx.moveTo(canvas.width * 0.55, canvas.height * 0.72);
-        ctx.lineTo(canvas.width * 0.65, canvas.height * 0.72);
-        ctx.stroke();
-
-        // Big Smile Mouth
-        ctx.beginPath();
-        ctx.arc(canvas.width * 0.5, canvas.height * 0.72, canvas.width * 0.18, 0, Math.PI, false);
-        ctx.stroke();
-        }
+// Left Eye
+ctx.moveTo(canvas.width * 0.35, canvas.height * 0.72);
+ctx.lineTo(canvas.width * 0.42, canvas.height * 0.72);
+// Right Eye
+ctx.moveTo(canvas.width * 0.58, canvas.height * 0.72);
+ctx.lineTo(canvas.width * 0.65, canvas.height * 0.72);
+// Big Smile Mouth
+ctx.moveTo(canvas.width * 0.68, canvas.height * 0.75);
+ctx.arc(canvas.width * 0.5, canvas.height * 0.75, canvas.width * 0.18, 0, Math.PI, false);
+ctx.stroke();
 
             
         }
