@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CATETIC OS</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body, html {
+            width: 100%; height: 100%; overflow: hidden;
+            background: #000;
+            display: flex; justify-content: center; align-items: center;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        canvas {
+            display: block;
+            max-width: 100%;
+            max-height: 100%;
+            aspect-ratio: 9 / 16;
+            box-shadow: 0 0 30px rgba(0, 255, 70, 0.4);
+        }
+        #catVideo {
+            display: none;
+            position: absolute;
+            width: 100%; height: 100%;
+            object-fit: cover;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+
+    <video id="catVideo" loop playsinline src="1775353548457063.mp4"></video>
+    <canvas id="gameCanvas"></canvas>
+
+<script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const video = document.getElementById('catVideo');
+
+    canvas.width = 1080;
+    canvas.height = 1920;
+
+    // Sound
+    const bgMusic = new Audio('Intro_music.m4a');
+    bgMusic.loop = true;
+    let musicPlaying = false;
+
+    function toggleMusicSystem() {
+        if (musicPlaying) {
+            bgMusic.pause();
+            musicPlaying = false;
+        } else {
+            bgMusic.play().catch(() => {});
+            musicPlaying = true;
+        }
+    }
+
+    // Assets
+    const images = {};
+    const assetFiles = {
+        menu: 'IMG_9002.png',
+        battle: 'IMG_9005.png',
+        glasses: 'IMG_8681.png',
+        lounge1: 'IMG_9053.png',
+        qrCat: 'IMG_9049.png',
+        lounge2: 'IMG_9054.png',
+        keypad: 'IMG_9058.png',
+        gameroom: 'IMG_9044.png'
+    };
+
+    let loadedCount = 0;
+    Object.keys(assetFiles).forEach(key => {
+        images[key] = new Image();
+        images[key].src = assetFiles[key];
+        images[key].onload = () => { if (++loadedCount === Object.keys(assetFiles).length) requestAnimationFrame(gameLoop); };
+    });
+
+    let gameState = "MENU";
+    let toastMessage = "";
+    let toastTimer = 0;
+    let inputCode = "";
+    const masterPassword = "7777777";
+
+    // Rules Typewriter
+    let typeProgress = 0;
+    let lastTypeTime = 0;
+    let rulesFinished = false;
+
+    const rulesText = [
+        "THE CATETIC SIMULATION IS UNSTABLE.",
+        "",
+        "--- CHOOSE YOUR ALIGNMENT ---",
+        "🔵 SAMURAI CAT (LEFT): THE BLUE PILL PATH.",
+        "   FIGHT FOR FREEDOM WITH ONE FAST ATTACK.",
+        "   SURPASS 6 CLICKS PER SECOND TO BREAK OUT.",
+        "",
+        "🔴 NINJA CAT (RIGHT): THE RED PILL TRAP.",
+        "   RIGGED BY THE ARCHITECT. CHOOSING THIS",
+        "   SIDE LEADS TO COMPLETE CRASH.",
+        "",
+        "WARNING: ONCE 'DRINK WATER' IS PRESSED,",
+        "THE SYSTEM WILL INJECT 150 BPM CHAOS.",
+        "THERE IS NO WAY BACK.",
+        "",
+        "-> TAP ANYWHERE TO EXIT TERMINAL _"
+    ];
+
+    function gameLoop() {
+        ctx.fillStyle = "#000000";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        if (gameState === "MENU" && images.menu) {
+            ctx.drawImage(images.menu, 0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = "#00ff46";
+            ctx.font = "bold 45px Courier New";
+            ctx.textAlign = "left";
+            ctx.fillText("RULES", 80, 1480);
+
+            ctx.fillStyle = musicPlaying ? "#00ff46" : "#ff1a1a";
+            ctx.textAlign = "center";
+            ctx.fillText(musicPlaying ? "🔊" : "🔇", 980, 1480);
+
+        } 
+        else if (gameState === "RULES") {
+            ctx.fillStyle = "#000000";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.shadowColor = "#00ff46";
+            ctx.shadowBlur = 25;
+            ctx.fillStyle = "#00ff46";
+            ctx.font = "bold 42px Courier New";
+            ctx.textAlign = "center";
+            ctx.fillText("Hello Neo... 🐱", 540, 260);
+
+            ctx.font = "32px Courier New";
+            ctx.textAlign = "left";
+
+            const now = Date.now();
+            if (!rulesFinished && now - lastTypeTime > 45) {
+                typeProgress++;
+                lastTypeTime = now;
+            }
+
+            const full = rulesText.join("\n");
+            const visible = full.substring(0, typeProgress);
+            const lines = visible.split("\n");
+
+            let y = 380;
+            for (let line of lines) {
+                ctx.fillText(line, 110, y);
+                y += 58;
+            }
+
+            if (rulesFinished) {
+                ctx.font = "bold 140px Courier New";
+                ctx.fillText("😹", 540, 1650);
+            }
+            ctx.shadowBlur = 0;
+            if (typeProgress >= full.length) rulesFinished = true;
+        } 
+        else if (gameState === "GLASSES_CAT" && images.glasses) {
+            ctx.drawImage(images.glasses, 0, 0, canvas.width, canvas.height);
+        }
+        else if (gameState === "KEYPAD" && images.keypad) {
+            ctx.drawImage(images.keypad, 0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = "#ff1a1a";
+            ctx.font = "bold 120px Courier New";
+            ctx.textAlign = "center";
+            ctx.fillText(inputCode || "ENTER", 540, 380);
+            ctx.textAlign = "left";
+        } 
+        else if (gameState === "GAME_ROOM" && images.gameroom) {
+            ctx.drawImage(images.gameroom, 0, 0, canvas.width, canvas.height);
+        }
+
+        // Toast
+        if (toastTimer > 0) {
+            ctx.fillStyle = "rgba(0,255,70,0.95)";
+            ctx.fillRect(200, 100, 680, 130);
+            ctx.fillStyle = "#000";
+            ctx.font = "bold 42px Courier New";
+            ctx​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​
