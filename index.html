@@ -77,7 +77,7 @@
         lounge2: 'IMG_9054.png',    // 7. VIP Lounge 2
         keypad: 'IMG_9058.png',     // 8. Copper Keypad Door
         gameroom: 'IMG_9044.png',    // 9. Secret Game Room
-        secretrooom:  'IMG_8603.png'    // 10. Secret room 
+        secretroom: 'IMG_8603.png',    // 10. Secret room 
     };
 
     let loadedCount = 0;
@@ -192,17 +192,28 @@
         else if (gameState === "VIP_LOUNGE_2") {
             ctx.drawImage(images.lounge2, 0, 0, canvas.width, canvas.height);
         } 
-        // --- DYNAMIC LED SCREEN RENDER ---
-          ctx.font = "bold 45px 'Courier New', monospace";
-           ctx.textAlign = "center";
-           ctx.fillStyle = "#ffb834"; // 🌟 Matches the glowing warm gold/silver of the big button lens!
+            // --- 8. COPPER KEYPAD RENDER ENGINE (IMG_9058) ---
+    else if (gameState === "KEYPAD") {
+        // Draws the copper keypad background image safely
+        ctx.drawImage(images.keypad, 0, 0, 1080, 1920);
+
+        // Draws your custom gold numbers layer perfectly inside the right-side box
+        ctx.font = "bold 45px 'Courier New', monospace";
+        ctx.textAlign = "center";
+        ctx.fillStyle = "#ffb834"; // 🌟 Match that big beautiful silver dial light!
 
         if (currentEnteredCode.length === 0) {
-            ctx.fillText("CLOSED", 680, 180); // Centers perfectly inside your blue box layout
+            ctx.fillText("CLOSED", 680, 180);
         } else {
-            ctx.fillText(currentEnteredCode, 680, 180); // Shows digits or error states
-        }    
-        } 
+            ctx.fillText(currentEnteredCode, 680, 180);
+        }
+    }
+    
+    // --- 10. SECRET SANCTUARY UNLOCKED (IMG_8603) ---
+    else if (gameState === "SECRET_ROOM") {
+        // Corrected spelling to match your 3-O file registry!
+        ctx.drawImage(images.secretrooom, 0, 0, 1080, 1920); 
+    }
         else if (gameState === "GAME_ROOM") {
             ctx.drawImage(images.gameroom, 0, 0, canvas.width, canvas.height);
         }
