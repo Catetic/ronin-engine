@@ -149,7 +149,7 @@
 
             // 2. Set the matrix style
             ctx.fillStyle = "#00ff46";
-            ctx.font = "32px 'Courier New', Courier, monospace";
+            ctx.font = "47px 'Courier New', Courier, monospace";
             ctx.textAlign = "left";
 
             // 3. Typewriter character progression 
@@ -208,7 +208,7 @@
         
     } } // <--- Keeps the Keypad drawing enclosed
           else if (gameState === "SECRET_ROOM") {
-        ctx.drawImage(images.secretroom, 0, 0, 1080, 1920);
+        ctx.drawImage(images.secretroom, 0, 0, canvas.width, canvas.height);
        }
         else if (gameState === "GAME_ROOM") {
         ctx.drawImage(images.gameroom, 0, 0, canvas.width, canvas.height);
