@@ -153,7 +153,7 @@
             ctx.font = "47px 'Courier New', Courier, monospace";
             ctx.textAlign = "left";
 
-       // 3. // 1. Initialize global state trackers once
+       // 3.  // 1. Initialize global state trackers once
 if (typeof window.typeProgress === 'undefined') {
     window.typeProgress = 0;
     window.lastTypeTime = Date.now();
@@ -171,34 +171,52 @@ if (Date.now() - window.lastTypeTime > 30) {
     window.lastTypeTime = Date.now();
 }
 
-// 4. Render text
+// 4. Render text safely
 ctx.fillStyle = "#00ff46";
-ctx.font = "47px monospace"; // Reverted to 47px
-let linesToDraw = fullTextString.substring(0, window.typeProgress).split("\n");
+ctx.font = "47px monospace"; 
+
+// Get slice and split, filtering out corrupted trailing empties if necessary
+let currentSlice = fullTextString.substring(0, window.typeProgress);
+let linesToDraw = currentSlice.split("\n");
 
 let startY = 150; 
 let lineHeight = 65;
 for (let i = 0; i < linesToDraw.length; i++) {
-    ctx.fillText(linesToDraw[i], 50, startY + (i * lineHeight));
+    // Only render if there is actual text content in the line split
+    if (linesToDraw[i].length > 0) {
+        ctx.fillText(linesToDraw[i], 50, startY + (i * lineHeight));
+    }
 }
 
-// 5. Draw Matrix Smile
+// 5. Draw Matrix Smile (Fixed Path Isolation)
 ctx.strokeStyle = "#00ff46"; 
 ctx.lineWidth = 8;           
 ctx.lineCap = "round";
-ctx.beginPath();
 
-// Left Eye
+// --- Left Eye ---
+ctx.beginPath();
 ctx.moveTo(canvas.width * 0.35, canvas.height * 0.72);
 ctx.lineTo(canvas.width * 0.42, canvas.height * 0.72);
-// Right Eye
+ctx.stroke();
+
+// --- Right Eye ---
+ctx.beginPath();
 ctx.moveTo(canvas.width * 0.58, canvas.height * 0.72);
 ctx.lineTo(canvas.width * 0.65, canvas.height * 0.72);
-// Big Smile Mouth
-ctx.moveTo(canvas.width * 0.68, canvas.height * 0.75);
-ctx.arc(canvas.width * 0.5, canvas.height * 0.75, canvas.width * 0.18, 0, Math.PI, false);
 ctx.stroke();
-        }
+
+// --- Big Smile Mouth ---
+ctx.beginPath();
+// Set arc parameters explicitly
+let centerX = canvas.width * 0.5;
+let centerY = canvas.height * 0.75;
+let radius = canvas.width * 0.18;
+
+// Explicitly move the pen to the start point of the arc to prevent connecting lines from the eyes
+ctx.moveTo(centerX + radius, centerY); 
+ctx.arc(centerX, centerY, radius, 0, Math.PI, false);
+ctx.stroke();
+    }
             
         }
         else if (gameState === "BATTLE") {
