@@ -201,22 +201,18 @@
         ctx.textAlign = "center";
         ctx.fillStyle = "#ffb834"; 
 
-        if (inputCode.length === 0) {
-            ctx.fillText("CLOSED", 680, 240); 
-        } else {
-            ctx.fillText(inputCode, 680, 240); 
+                if (inputCode.length === 0) {
+            ctx.fillText("CLOSED", 680, 240);
+           } else {
+            ctx.fillText(inputCode, 680, 240);
         }
-    } // <--- THIS BRACKET SEPARATES THE KEYPAD FROM THE SANCTUARY!
-    
-    // --- 10. SECRET SANCTUARY UNLOCKED (IMG_8603) ---
-    else if (gameState === "SECRET_ROOM") {
-        ctx.drawImage(images.secretrooom, 0, 0, 1080, 1920); 
-    }
-    
-    // --- 11. GAME ROOM SCENE ---
-    else if (gameState === "GAME_ROOM") {
+        } // <--- Keeps the Keypad drawing enclosed
+          else if (gameState === "SECRET_ROOM") {
+        ctx.drawImage(images.secretrooom, 0, 0, 1080, 1920);
+        }
+        else if (gameState === "GAME_ROOM") {
         ctx.drawImage(images.gameroom, 0, 0, 1080, 1920);
-    }
+        }
 
         // Clipboards notification confirmation alert
         if (toastTimer > 0) {
