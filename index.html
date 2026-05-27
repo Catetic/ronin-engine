@@ -158,9 +158,6 @@
                 window.typeProgress = 0;
                 window.lastTypeTime = Date.now();
             }
-            if (typeof window.lastTypeTime === 'undefined') {
-                window.lastTypeTime = 0;
-            }
             let currentTime = Date.now();
             if (currentTime - window.lastTypeTime > 30) { 
                 window.typeProgress++;
