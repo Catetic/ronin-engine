@@ -192,21 +192,25 @@
         else if (gameState === "VIP_LOUNGE_2") {
             ctx.drawImage(images.lounge2, 0, 0, canvas.width, canvas.height);
         } 
-            // --- 8. COPPER KEYPAD RENDER ENGINE (IMG_9058) ---
+             // --- 8. COPPER KEYPAD RENDER ENGINE (IMG_9058) ---
     else if (gameState === "KEYPAD") {
         ctx.drawImage(images.keypad, 0, 0, 1080, 1920);
 
-        // Render Configuration
-        ctx.font = "bold 42px 'Courier New', monospace"; 
+        // Render Configuration - BIGGER AND DROPPED LOWER
+        ctx.font = "bold 56px 'Courier New', monospace"; // Huge, bold arcade display
         ctx.textAlign = "center";
-        ctx.fillStyle = "#ffb834"; // Glowing gold button light color
+        ctx.fillStyle = "#ffb834"; // 🌟 Warm gold button lens hue
 
         if (inputCode.length === 0) {
-            ctx.fillText("CLOSED", 680, 180);
+            ctx.fillText("CLOSED", 680, 240); // Sits perfectly centered on the LED plate!
         } else {
-            ctx.fillText(inputCode, 680, 180);
+            ctx.fillText(inputCode, 680, 240); // Tracks numbers, errors, or custom clues
         }
+    }
     
+    // --- 10. SECRET SANCTUARY UNLOCKED (IMG_8603) ---
+    else if (gameState === "SECRET_ROOM") {
+        ctx.drawImage(images.secretrooom, 0, 0, 1080, 1920); 
     }
     
     // --- 10. SECRET SANCTUARY UNLOCKED (IMG_8603) ---
@@ -336,57 +340,64 @@
                 inputCode = ""; 
             }
         } 
-                // 8. COPPER KEYPAD DOOR AUTHENTICATOR INTERFACE (IMG_9058)
+                      // 8. COPPER KEYPAD DOOR AUTHENTICATOR INTERFACE (IMG_9058)
         else if (gameState === "KEYPAD") {
 
-            // 🔘 THE BIG SILVER BUTTON (Bypass Hint State - Clean Bounds)
+            // 🔘 THE BIG SILVER BUTTON (Escape Hatch / Clue Toggle)
             if (clickX > 30 && clickX < 250 && clickY > 1050 && clickY < 1350) {
-                inputCode = "[next home]"; // Writes directly using your system variable!
+                if (inputCode === "[next home]") {
+                    // Second consecutive press triggers escape mechanism!
+                    inputCode = ""; 
+                    gameState = "CHOOSE"; // Teleport player back to main page loop
+                } else {
+                    // First press loads the hint string directly on the LED screen
+                    inputCode = "[next home]";
+                }
                 return;
             }
 
             // 🔢 NUMERIC INPUT GRID
             if (clickY > 580 && clickY < 1500) {
                 
-                // Automatically wipe system texts or clues when starting to type a fresh combination
-                if (inputCode === "CLOSED" || inputCode === "ERROR" || inputCode === "[next home]") {
+                // Instantly wipe text notifications (CLOSED, ERROR, COOOOL, Hints) when starting a new type sequence
+                if (inputCode === "CLOSED" || inputCode === "ERROR" || inputCode === "[next home]" || inputCode === "COOOOL") {
                     inputCode = ""; 
                 }
 
-                // ROW 1: Buttons 1, 2, 3
+                // ROW 1: Buttons 1, 2, 3 (Allows up to 9 total digits on screen!)
                 if (clickY > 580 && clickY < 760) {
-                    if (clickX > 320 && clickX < 500) registerKey("1");
-                    else if (clickX > 530 && clickX < 710) registerKey("2");
-                    else if (clickX > 740 && clickX < 920) registerKey("3");
+                    if (clickX > 320 && clickX < 500 && inputCode.length < 9) registerKey("1");
+                    else if (clickX > 530 && clickX < 710 && inputCode.length < 9) registerKey("2");
+                    else if (clickX > 740 && clickX < 920 && inputCode.length < 9) registerKey("3");
                 }
                 // ROW 2: Buttons 4, 5, 6
                 else if (clickY > 800 && clickY < 980) {
-                    if (clickX > 320 && clickX < 500) registerKey("4");
-                    else if (clickX > 530 && clickX < 710) registerKey("5");
-                    else if (clickX > 740 && clickX < 920) registerKey("6");
+                    if (clickX > 320 && clickX < 500 && inputCode.length < 9) registerKey("4");
+                    else if (clickX > 530 && clickX < 710 && inputCode.length < 9) registerKey("5");
+                    else if (clickX > 740 && clickX < 920 && inputCode.length < 9) registerKey("6");
                 }
                 // ROW 3: Buttons 7, 8, 9
                 else if (clickY > 1020 && clickY < 1200) {
-                    if (clickX > 320 && clickX < 500) registerKey("7");
-                    else if (clickX > 530 && clickX < 710) registerKey("8");
-                    else if (clickX > 740 && clickX < 920) registerKey("9");
+                    if (clickX > 320 && clickX < 500 && inputCode.length < 9) registerKey("7");
+                    else if (clickX > 530 && clickX < 710 && inputCode.length < 9) registerKey("8");
+                    else if (clickX > 740 && clickX < 920 && inputCode.length < 9) registerKey("9");
                 }
                 // ROW 4: Buttons 0, K, C
                 else if (clickY > 1240 && clickY < 1420) {
-                    if (clickX > 320 && clickX < 500) registerKey("0");
+                    if (clickX > 320 && clickX < 500 && inputCode.length < 9) registerKey("0");
                     
-                    // 🔑 'K' KEY: VERIFY CODE
+                    // 🔑 'K' KEY: SUBMIT & VERIFY THE 49 RONINS hand-shake
                     else if (clickX > 530 && clickX < 710) {
-                        if (inputCode === "7777") { // Your master unlock password!
+                        if (inputCode === "7777777") { // ⚔️ EXACTLY 7 SEVENS UNLOCKS THE HYPNOTIC KYŌSO MASTER!
                             gameState = "SECRET_ROOM"; 
                         } else {
-                            inputCode = "ERROR"; // Flash fault text inside right LED box
+                            inputCode = "ERROR"; // Any other combination (longer or shorter) fails instantly!
                         }
                     }
                     
-                    // 🧼 'C' KEY: SYSTEM WIPE
+                    // 🧼 'C' KEY: MANUAL RESET TWIST 😹
                     else if (clickX > 740 && clickX < 920) {
-                        inputCode = ""; // Drops screen text back to "CLOSED"
+                        inputCode = "COOOOL"; // Flashes across the gold LED screen!
                     }
                 }
             }
