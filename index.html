@@ -153,16 +153,17 @@
             ctx.font = "47px 'Courier New', Courier, monospace";
             ctx.textAlign = "left";
 
-            // 3. Typewriter character progression 
-            if (typeof window.typeProgress === 'undefined') {
-                window.typeProgress = 0;
-                window.lastTypeTime = Date.now();
+                    // 3. Typewriter character progression
+         if (window.typeProgress === undefined) {
+            window.typeProgress = 0;
+            window.lastTypeTime = Date.now();
             }
-            let currentTime = Date.now();
-            if (currentTime - window.lastTypeTime > 30) { 
-                window.typeProgress++;
-                window.lastTypeTime = currentTime;
-            }
+
+          if (Date.now() - window.lastTypeTime > 40) {
+            window.typeProgress++;
+            window.lastTypeTime = Date.now();
+             }
+
 
             // 4. Extract and split the typewriter substring
             let fullTextString = rulesText.join("\n");
