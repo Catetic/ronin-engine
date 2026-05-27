@@ -153,17 +153,15 @@
             ctx.font = "47px 'Courier New', Courier, monospace";
             ctx.textAlign = "left";
 
-       // 3. 
-
-     if(gameState === "RULES") {
+       // 3. if(gameState === "RULES") {
     // 1. HARD TRACKING FIX: Ensure trackers exist and stay relevant
     if (typeof window.typeProgress === 'undefined' || !window.lastTypeTime) {
         window.typeProgress = 0;
         window.lastTypeTime = Date.now();
     }
 
-    // 2. Define text content
-    const rulesText = ["RULE 1: ENTER THE MATRIX.", "RULE 2: TRUST NO CAT.", "RULE 3: DRINK WATER."];
+    // 2. Reference the original global lore vault array
+    // (Ensure rulesText array lines 105-123 remains defined above your gameLoop)
     let fullTextString = rulesText.join("\n");
 
     // 3. Robust Increment logic
@@ -172,25 +170,25 @@
         if (window.typeProgress < fullTextString.length) {
             window.typeProgress++;
         }
-        window.lastTypeTime = currentTime; // Core fix: use normalized variable
+        window.lastTypeTime = currentTime; 
     }
 
     // 4. Render text - Explicit styling to bypass Safari bugs
     ctx.fillStyle = "#00ff46";
-    ctx.font = "bold 22px Courier New, monospace"; // Added fallback system font for WebKit
-    ctx.textBaseline = "top"; // Forces alignment anchor calculation
+    ctx.font = "bold 22px Courier New, monospace"; 
+    ctx.textBaseline = "top"; 
 
-    // Safety fallback: if progress is stuck at 0 for some reason, force it to show at least 1 char
+    // Safety fallback
     let displayProgress = window.typeProgress > 0 ? window.typeProgress : 1;
     let currentSlice = fullTextString.substring(0, displayProgress);
     let linesToDraw = currentSlice.split("\n");
 
-    let startY = 120; 
-    let lineHeight = 40; 
+    let startY = 80; // Adjusted up slightly to fit your full immersive lore text comfortably
+    let lineHeight = 35; // Compacted slightly so the long text doesn't flow off the iPhone screen
     for (let i = 0; i < linesToDraw.length; i++) {
-        // Remove empty check restriction to ensure partial rendering engine passes strings safely
         ctx.fillText(linesToDraw[i], 30, startY + (i * lineHeight));
     }
+
 
     // 5. Matrix Smile (Kept exactly as seen in your image since it works!)
     ctx.strokeStyle = "#00ff46"; 
@@ -303,6 +301,10 @@
                 gameState = "BATTLE";
                 return;
             }
+            red START action center button collider
+            if (clickX > 240 && clickX < 840 && clickY > 1300 && clickY < 1650) {
+                gameState = "secretroom";
+                return;
             // Click detector for the secret link
        if (!window.hasClickSetup) {
         window.hasClickSetup = true;
@@ -387,7 +389,12 @@
                     inputCode = "[next home]";
                 }
                 return;
-            }
+            } 
+            IMG_9053)
+        else if (gameState === "VIP_LOUNGE_1") {
+            // Wide horizontal footer link to propose layout toasts
+            if (clickY > 1450 && clickY < 1900) {
+                gameState = "VIP_LOUNGE_2";
 
             // 🔢 NUMERIC INPUT GRID (Shifted UP to perfectly catch your finger taps!)
             if (clickY > 540 && clickY < 1460) {
