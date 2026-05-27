@@ -173,23 +173,23 @@
         window.lastTypeTime = currentTime; 
     }
 
-    // 4. Render text - Explicit styling to bypass Safari bugs
+    // 4.     // 4. Render text - Explicit styling to bypass Safari bugs
     ctx.fillStyle = "#00ff46";
-    ctx.font = "bold 22px Courier New, monospace"; 
+    ctx.font = "bold 22px 'Courier New', monospace"; 
     ctx.textBaseline = "top"; 
 
     // Safety fallback
-    let displayProgress = window.typeProgress > 0 ? window.typeProgress : 1;
+    let displayProgress = typeProgress > 0 ? typeProgress : 1;
     let currentSlice = fullTextString.substring(0, displayProgress);
     let linesToDraw = currentSlice.split("\n");
 
-    let startY = 80; // Adjusted up slightly to fit your full immersive lore text comfortably
-    let lineHeight = 35; // Compacted slightly so the long text doesn't flow off the iPhone screen
+    let startY = 80; 
+    let lineHeight = 35; 
     for (let i = 0; i < linesToDraw.length; i++) {
         ctx.fillText(linesToDraw[i], 30, startY + (i * lineHeight));
     }
 
-
+    l
     // 5. Matrix Smile (Kept exactly as seen in your image since it works!)
     ctx.strokeStyle = "#00ff46"; 
     ctx.lineWidth = 6;           
