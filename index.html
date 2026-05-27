@@ -238,13 +238,7 @@
     let centerY = canvas.height * 0.86;
     let radius = isMobile ? canvas.width * 0.15 : canvas.width * 0.12; 
     ctx.moveTo(centerX + radius, centerY); 
-    ctx.arc(centerX, centerY, radius, 0, Math.PI, false);
-    ctx.stroke();
-
-} // <--- Safe closing block bracket
-else if (gameState === "BATTLE") {
-    // Battle initialization pipeline
-}
+    ctx.arc(centerX, centerY, radius, 0, Math.PI, 
 
 
 
