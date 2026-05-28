@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CATETIC OS</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body, html {
+            width: 100%; height: 100%; overflow: hidden;
+            background: #000;
+            font-family: 'Courier New', monospace;
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        #debug {
+            position: absolute; top: 10px; left: 10px; color: #0f0; font-size: 13px;
+            background: rgba(0,0,0,0.8); padding: 6px 10px; z-index: 100; border: 1px solid #0f0;
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="gameCanvas"></canvas>
+    <div id="debug">CATETIC OS initializing...</div>
+
+<script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const debug = document.getElementById('debug');
+
+    // Force canvas size
+    function resizeCanvas() {
+        canvas.width = 1080;
+        canvas.height = 1920;
+    }
+    resizeCanvas();
+
+    let gameState = "MENU";
+    let frame = 0;
+
+    function gameLoop() {
+        ctx.fillStyle = "#000000";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Background grid / matrix feel
+        ctx.strokeStyle = "rgba(0, 255, 70, 0.1)";
+        for (let i = 0; i < 20; i++) {
+            ctx.beginPath();
+            ctx.moveTo(0, i * 100);
+            ctx.lineTo(canvas.width, i * 100);
+            ctx.stroke();
+        }
+
+        ctx.fillStyle = "#00ff46";
+        ctx.textAlign = "center";
+
+        ctx.font = "bold 90px Courier New";
+        ctx.fillText("CATETIC", 540, 600);
+
+        ctx.font = "bold 55px Courier New";
+        ctx.fillText("OS", 540, 720);
+
+        ctx.font = "38px Courier New";
+        ctx.fillText("DAY " + (4 + Math.floor(frame/300)%3), 540, 900);
+        ctx.fillText("THE PENGUIN ARMY AWAITS", 540, 1050);
+
+        ctx.font = "32px Courier New";
+        ctx.fillText("TAP SCREEN", 540, 1600);
+
+        frame++;
+        requestAnimationFrame(gameLoop);
+    }
+
+    // Tap feedback
+    canvas.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        debug.textContent = "TAP DETECTED - " + new Date().toLocaleTimeString();
+        ctx.fillStyle = "#ff00ff";
+        ctx.fillRect(300, 1300, 480, 150);
+    });
+
+    canvas.addEventListener('click', () => {
+        debug.textContent = "CLICK DETECTED";
+    });
+
+    // Start immediately
+    requestAnimationFrame(gameLoop);
+    debug.textContent = "Game loop running ✓";
+</script>
+</body>
+</html>
