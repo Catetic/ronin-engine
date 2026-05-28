@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>CATETIC OS</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body, html {
+            width: 100%; height: 100%; overflow: hidden;
+            background: #000;
+            display: flex; justify-content: center; align-items: center;
+            font-family: 'Courier New', monospace;
+        }
+        canvas {
+            display: block;
+            max-width: 100%;
+            max-height: 100%;
+            aspect-ratio: 9 / 16;
+            box-shadow: 0 0 20px rgba(0, 255, 70, 0.3);
+        }
+        #catVideo {
+            display: none;
+            position: absolute;
+            width: 100%; height: 100%;
+            object-fit: cover;
+            z-index: 10;
+        }
+        #debug {
+            position: absolute; top: 10px; left: 10px; color: #0f0; font-size: 14px;
+            background: rgba(0,0,0,0.7); padding: 8px; z-index: 100; font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+
+    <video id="catVideo" loop playsinline src="1775353548457063.mp4"></video>
+    <canvas id="gameCanvas"></canvas>
+    <div id="debug">Initializing CATETIC OS...</div>
+
+<script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const video = document.getElementById('catVideo');
+    const debug = document.getElementById('debug');
+
+    canvas.width = 1080;
+    canvas.height = 1920;
+
+    // Sound
+    const bgMusic = new Audio('Intro_music.m4a');
+    bgMusic.loop = true;
+    let musicPlaying = false;
+
+    function toggleMusicSystem() {
+        if (musicPlaying) {
+            bgMusic.pause();
+        } else {
+            bgMusic.play().catch(() => {});
+        }
+        musicPlaying = !musicPlaying;
+    }
+
+    // Assets
+    const images = {};
+    const assetFiles = {
+        menu: 'IMG_9002.png',
+        battle: 'IMG_9005.png',
+        glasses: 'IMG_8681.png',
+        lounge1: 'IMG_9053.png',
+        qrCat: 'IMG_9049.png',
+        lounge2: 'IMG_9054.png',
+        keypad: 'IMG_9058.png',
+        gameroom: 'IMG_9044.png'
+    };
+
+    let loadedCount = 0;
+    const totalAssets = Object.keys(assetFiles).length;
+
+    debug.textContent = `Loading ${totalAssets} assets...`;
+
+    Object.keys(assetFiles).forEach(key => {
+        images[key] = new Image();
+        images[key].onload = () => {
+            loadedCount++;
+            debug.textContent = `Loaded ${loadedCount}/${totalAssets}`;
+            if (loadedCount === totalAssets) {
+                debug.textContent = "All assets loaded ✓";
+                setTimeout(() => debug.style.display = "none", 1200);
+            }
+        };
+        images[key].onerror = () => {
+            debug.textContent = `⚠️ Missing: ${assetFiles[key]}`;
+            console.error(`Missing image: ${assetFiles[key]}`);
+            loadedCount++; // continue anyway
+        };
+        images[key].src = assetFiles[key];
+    });
+
+    // Game State
+    let gameState = "MENU";
+    let toastMessage = "";
+    let toastTimer = 0;
+    let inputCode = "";
+    const masterPassword = "7777777";
+    let typeProgress = 0;
+    let lastTypeTime = 0;
+    let rulesFinished = false;
+
+    const rulesText = [
+        "THE CATETIC SIMULATION IS UNSTABLE.",
+        "",
+        "--- CHOOSE YOUR ALIGNMENT ---",
+        "🔵 SAMURAI CAT (LEFT): THE BLUE PILL PATH.",
+        "   FIGHT FOR FREEDOM WITH ONE FAST ATTACK.",
+        "   SURPASS 6 CLICKS PER SECOND TO BREAK OUT.",
+        "",
+        "🔴 NINJA CAT (RIGHT): THE RED PILL TRAP.",
+        "   RIGGED BY THE ARCHITECT. CHOOSING THIS",
+        "   SIDE LEADS TO COMPLETE CRASH.",
+        "",
+        "WARNING: ONCE 'DRINK WATER' IS PRESSED,",
+        "THE SYSTEM WILL INJECT 150 BPM CHAOS.",
+        "THERE IS NO WAY BACK.",
+        "",
+        "-> TAP ANYWHERE TO EXIT TERMINAL _"
+    ];
+
+    function showToast(msg, duration = 1800) {
+        toastMessage = msg;
+        toastTimer = duration;
+    }
+
+    function gameLoop() {
+        ctx.fillStyle = "#000000";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Loading screen
+        if (loadedCount < totalAssets) {
+            ctx.fillStyle = "#00ff46";
+            ctx.font = "bold 55px Courier New";
+            ctx.textAlign = "center";
+            ctx.fillText("CATETIC OS", 540, 800);
+            ctx.font = "38px Courier New";
+            ctx.fillText(`LOADING ${loadedCount}/${totalAssets}`, 540, 920);
+        }
+        // MENU
+        else if (gameState === "MENU" && images.menu) {
+            ctx.drawImage(images.menu, 0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = "#00ff46";
+            ctx.font = "bold 48px Courier New";
+            ctx.textAlign = "left";
+            ctx.fillText("RULES", 80, 1480);
+
+            ctx.fillStyle = musicPlaying ? "#00ff46" : "#ff1a1a";
+            ctx.textAlign = "center";
+            ctx.fillText(musicPlaying ? "🔊" : "🔇", 980, 1480);
+        } 
+        // RULES
+        else if (gameState === "RULES") {
+            ctx.fillStyle = "#000000";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = "#00ff46";
+            ctx.font = "bold 42px Courier New";
+            ctx.textAlign = "center";
+            ctx.fillText("Hello Neo... 🐱", 540, 260);
+
+            ctx.font = "32px Courier New";
+            ctx.textAlign = "left";
+
+            const now = Date.now();
+            if (!rulesFinished && now - lastTypeTime > 40) {
+                typeProgress++;
+                lastTypeTime = now;
+            }
+
+            const full = rulesText.join("\n");
+            const visible = full.substring(0, typeProgress);
+            const lines = visible.split("\n");
+
+            let y = 380;
+            for (let line of lines) {
+                ctx.fillText(line, 100, y);
+                y += 58;
+            }
+
+            if (typeProgress >= full.length) rulesFinished = true;
+        } 
+        // Other states fallback
+        else if (images[gameState.toLowerCase()]) {
+            ctx.drawImage(images[gameState.toLowerCase()], 0, 0, canvas.width, canvas.height);
+        }
+
+        // Toast
+        if (toastTimer > 0) {
+            ctx.fillStyle = "rgba(0,255,70,0.95)";
+            ctx.fillRect(200, 120, 680, 140);
+            ctx.fillStyle = "#000";
+            ctx.font = "bold 45px Courier New";
+            ctx.textAlign = "center";
+            ctx.fillText(toastMessage, 540, 205);
+            toastTimer -= 16;
+        }
+
+        requestAnimationFrame(gameLoop);
+    }
+
+    // Input
+    function handleTap(x, y) {
+        if (gameState === "MENU") {
+            if (y > 1380) {
+                if (x < 540) {
+                    gameState = "RULES";
+                    typeProgress = 0;
+                    lastTypeTime = Date.now();
+                    rulesFinished = false;
+                } else {
+                    toggleMusicSystem();
+                }
+            }
+        } else if (gameState === "RULES" && rulesFinished) {
+            gameState = "GLASSES_CAT";
+            showToast("ACCESS GRANTED", 1600);
+        }
+    }
+
+    canvas.addEventListener('touchstart', e => {
+        e.preventDefault();
+        const rect = canvas.getBoundingClientRect();
+        const touch = e.touches[0];
+        const x = (touch.clientX - rect.left) * (canvas.width / rect.width);
+        const y = (touch.clientY - rect.top) * (canvas.height / rect.height);
+        handleTap(x, y);
+    });
+
+    canvas.addEventListener('click', e => {
+        const rect = canvas.getBoundingClientRect();
+        const x = (e.clientX - rect.left) * (canvas.width / rect.width);
+        const y = (e.clientY - rect.top) * (canvas.height / rect.height);
+        handleTap(x, y);
+    });
+
+    // Start the loop immediately
+    requestAnimationFrame(gameLoop);
+    debug.textContent = "Game loop started...";
+</script>
+</body>
+</html>
